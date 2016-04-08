@@ -1,0 +1,37 @@
+apply from: 'general.gradle'
+apply from: 'integration.gradle'
+
+group = 'org.tutske'
+
+dependencies {
+	compile (
+		[ group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21' ]
+	)
+	testCompile (
+		[ group: 'junit', name: 'junit', version: '4.12'],
+		[ group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3' ]
+	)
+	integrationCompile (
+		[ group: 'it.tutske', name: 'it-utils', version: 'a.1.1' ],
+	)
+}
+
+jar {
+	manifest {
+		attributes (
+			'Main-Class': 'org.tutske.websocket.Main',
+			'Class-Path': configurations.compile.collect ({ it.getName () }).join (' ')
+		)
+	}
+}
+
+itJar {
+	manifest {
+		attributes (
+			'Main-Class': 'it.tutske.IntegrationMain',
+			'Class-Path': ([jar.archivePath] + configurations.integrationRuntime)
+				.collect ({ it.getName () })
+				.join (' ')
+		)
+	}
+}

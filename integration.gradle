@@ -1,0 +1,35 @@
+apply plugin: 'idea'
+
+sourceSets {
+	integration {
+		java {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir (file ('src/it/java'))
+		}
+		resources.srcDir (file ('src/it/resources'))
+	}
+}
+task itJar (type: Jar) {
+	from sourceSets.integration.output
+	archiveName "it-${project.name}-${version}.jar"
+}
+
+configurations {
+	integrationCompile.extendsFrom testCompile
+	integrationRuntime.extendsFrom testRuntime
+}
+
+idea {
+	module {
+		scopes.TEST.plus += [ configurations.integrationCompile ]
+	}
+}
+
+task it (type: Test, dependsOn: ['assemble', 'itJar', 'copyDeps'] ) {
+	testClassesDir = sourceSets.integration.output.classesDir
+	classpath = sourceSets.integration.runtimeClasspath
+	environment 'TEST_JAR_PATH', itJar.archivePath
+	onOutput { descriptor, event -> print (event.message) }
+	reports.html.destination =  "${buildDir}/integration-report"
+}
