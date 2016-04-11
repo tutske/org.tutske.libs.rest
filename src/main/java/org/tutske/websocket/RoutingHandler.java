@@ -29,13 +29,39 @@ public class RoutingHandler extends AbstractHandler {
 	) throws IOException, ServletException {
 		Method method = Method.valueOf (request.getMethod ());
 		UrlRoute route = router.route (method, target);
-		RestObject result = route.getHandler ().apply (null);
 
+		if ( route == null ) {
+			return;
+		}
+
+		try { handleResponse (request, response, route.getHandler ().apply (null)); }
+		catch ( IOException io ) { throw io; }
+		catch ( Exception e ) { handleException (request, response, e); }
+
+		baserequest.setHandled (true);
+	}
+
+	private void handleResponse (HttpServletRequest request, HttpServletResponse response, RestObject result)
+	throws IOException {
 		response.setContentType ("application/json");
 		response.setStatus (HttpServletResponse.SC_OK);
 
 		gson.toJson (result.asJson (), response.getWriter ());
-		baserequest.setHandled (true);
+	}
+
+	private void handleException (HttpServletRequest request, HttpServletResponse response, Exception exception)
+	throws IOException {
+		response.setContentType ("application/json");
+		response.setStatus (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+		RestObject result = new RestObject () {{
+			v ("type", "http://www.example.com/internal_server_error");
+			v ("title", "Internal Error");
+			v ("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			v ("detail", exception.getMessage ());
+		}};
+
+		gson.toJson (result.asJson (), response.getWriter ());
 	}
 
 }
