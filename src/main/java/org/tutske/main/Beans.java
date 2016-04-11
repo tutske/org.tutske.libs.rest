@@ -7,6 +7,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.tutske.options.OptionStore;
+import org.tutske.rest.NotFoundHandler;
 import org.tutske.rest.RoutingHandler;
 import org.tutske.rest.UrlRouter;
 
@@ -26,6 +27,7 @@ public class Beans {
 		HandlerList handlers = new HandlerList ();
 		handlers.addHandler (resourceHandler ());
 		handlers.addHandler (routingHandler ());
+		handlers.addHandler (notFoundHandler ());
 		return handlers;
 	}
 
@@ -38,6 +40,10 @@ public class Beans {
 		resources.setResourceBase (path);
 
 		return resources;
+	}
+
+	public Handler notFoundHandler () {
+		return new NotFoundHandler (gson ());
 	}
 
 	public Handler routingHandler () {

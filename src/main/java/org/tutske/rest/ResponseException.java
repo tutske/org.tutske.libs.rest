@@ -32,13 +32,11 @@ public class ResponseException extends RuntimeException {
 	}
 
 	public Object asJson () {
-		this.data.merge (new RestObject () {{
+		return new RestObject () {{
 			v ("type", baseUrl + type);
 			v ("title", title);
 			v ("status", status);
 			v ("detail", getMessage ());
-		}});
-
-		return this.data.asJson ();
+		}}.merge (this.data).asJson ();
 	}
 }

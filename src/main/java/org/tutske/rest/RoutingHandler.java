@@ -22,12 +22,11 @@ public class RoutingHandler extends AbstractHandler {
 		this.gson = gson;
 	}
 
-	@Override public void handle (
-		String target, Request baserequest, HttpServletRequest request,
-		HttpServletResponse response
-	) throws IOException, ServletException {
+	@Override
+	public void handle (String s, Request base, HttpServletRequest request, HttpServletResponse response)
+	throws IOException, ServletException {
 		Method method = Method.valueOf (request.getMethod ());
-		UrlRoute route = router.route (method, target);
+		UrlRoute route = router.route (method, s);
 
 		if ( route == null ) {
 			return;
@@ -46,7 +45,7 @@ public class RoutingHandler extends AbstractHandler {
 		response.setStatus (HttpServletResponse.SC_OK);
 		gson.toJson (result, response.getWriter ());
 
-		baserequest.setHandled (true);
+		base.setHandled (true);
 	}
 
 }
