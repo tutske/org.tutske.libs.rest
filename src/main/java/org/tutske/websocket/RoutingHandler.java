@@ -34,34 +34,20 @@ public class RoutingHandler extends AbstractHandler {
 			return;
 		}
 
-		try { handleResponse (request, response, route.getHandler ().apply (null)); }
-		catch ( IOException io ) { throw io; }
-		catch ( Exception e ) { handleException (request, response, e); }
+		Object result;
+		try {
+			result = route.getHandler ().apply (null).asJson ();
+		} catch (ResponseException e) {
+			result = e.asJson ();
+		} catch (Exception e) {
+			result = new ResponseException (e.getMessage ()).asJson ();
+		}
 
-		baserequest.setHandled (true);
-	}
-
-	private void handleResponse (HttpServletRequest request, HttpServletResponse response, RestObject result)
-	throws IOException {
 		response.setContentType ("application/json");
 		response.setStatus (HttpServletResponse.SC_OK);
+		gson.toJson (result, response.getWriter ());
 
-		gson.toJson (result.asJson (), response.getWriter ());
-	}
-
-	private void handleException (HttpServletRequest request, HttpServletResponse response, Exception exception)
-	throws IOException {
-		response.setContentType ("application/json");
-		response.setStatus (HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-
-		RestObject result = new RestObject () {{
-			v ("type", "http://www.example.com/internal_server_error");
-			v ("title", "Internal Error");
-			v ("status", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			v ("detail", exception.getMessage ());
-		}};
-
-		gson.toJson (result.asJson (), response.getWriter ());
+		baserequest.setHandled (true);
 	}
 
 }

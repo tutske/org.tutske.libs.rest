@@ -14,7 +14,8 @@ public class Routes {
 	public final UrlRouter router = new UrlRouter ().add (
 		"Hello world routes",
 		new SimpleRoute ("get hello", "/hello", HelloWorldController::get),
-		new SimpleRoute ("post hello", "/hello", EnumSet.of (POST), HelloWorldController::post)
+		new SimpleRoute ("post hello", "/hello", EnumSet.of (POST), HelloWorldController::post),
+		new SimpleRoute ("fail", "/fail", HelloWorldController::fail)
 	);
 
 }

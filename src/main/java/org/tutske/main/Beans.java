@@ -14,6 +14,7 @@ import org.tutske.websocket.UrlRouter;
 public class Beans {
 
 	private final int port = OptionStore.get (Options.PORT);
+	private final String staticFilesPath = OptionStore.get (Options.STATIC_PATH);
 
 	public Server server () {
 		Server server = new Server (port);
@@ -30,7 +31,7 @@ public class Beans {
 
 	public Handler resourceHandler () {
 		String path = Main.class.getClassLoader ()
-			.getResource (OptionStore.get (Options.STATIC_PATH))
+			.getResource (staticFilesPath)
 			.toExternalForm ();
 
 		ResourceHandler resources = new ResourceHandler ();

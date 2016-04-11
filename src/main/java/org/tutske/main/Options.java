@@ -10,12 +10,13 @@ public class Options {
 	private static final String PREFIX = "TS_WEBSOCKET";
 	private static final String FILENAME  = "application.properties";
 
+	public static final Option<String> BASE_URL = new StringOption ("base url", "http://localhost:8080");
 	public static final Option<Integer> PORT = new IntegerOption ("port", 8080);
 	public static final Option<String> STATIC_PATH = new StringOption ("static path", "static");
 
 	public static void initialize (String [] args) {
 		OptionStore.registerOptions (
-			PORT, STATIC_PATH
+			PORT, STATIC_PATH, BASE_URL
 		);
 		OptionStore.registerPopulators (
 			new PropertyFileOptionsPopulator ("classpath://" + FILENAME),
