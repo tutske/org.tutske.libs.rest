@@ -1,13 +1,20 @@
 package org.tutske.websocket;
 
+
 public class HelloWorldController {
 
-	public static RestResponse get (HttpRequest request) {
-		return new RestResponse ("Hello World!");
+	public static RestObject get (HttpRequest request) {
+		return new RestObject () {{
+			v ("method", "GET");
+			v ("greeting", "Hello World!");
+		}};
 	}
 
-	public static RestResponse post (HttpRequest request) {
-		return new RestResponse ("posted: Hello World!");
+	public static RestObject post (HttpRequest request) {
+		return new RestObject () {{
+			v ("method", "POST");
+			v ("greeting", "Hello World!");
+		}};
 	}
 
 }

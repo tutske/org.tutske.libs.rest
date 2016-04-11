@@ -1,5 +1,7 @@
 package org.tutske.websocket;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -10,10 +12,6 @@ import org.tutske.options.OptionStore;
 public class Beans {
 
 	private final int port = OptionStore.get (Options.PORT);
-
-	public UrlRouter router () {
-		return new Routes ().router;
-	}
 
 	public Server server () {
 		Server server = new Server (port);
@@ -40,7 +38,15 @@ public class Beans {
 	}
 
 	public Handler routingHandler () {
-		return new RoutingHandler (router ());
+		return new RoutingHandler (router (), gson ());
+	}
+
+	public UrlRouter router () {
+		return new Routes ().router;
+	}
+
+	public Gson gson () {
+		return new GsonBuilder ().create ();
 	}
 
 }

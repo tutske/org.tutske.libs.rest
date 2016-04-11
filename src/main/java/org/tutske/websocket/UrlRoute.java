@@ -31,16 +31,16 @@ public abstract class UrlRoute {
 
 	private abstract static class BaseRoute extends UrlRoute {
 		protected final String identifier;
-		protected final Function<HttpRequest, RestResponse> function;
+		protected final Function<HttpRequest, RestObject> function;
 		protected final EnumSet<Method> methods;
 		protected final String [] descriptor;
 		protected final boolean [] shouldMatch;
 
-		public BaseRoute (String identifier, String descriptor, Function<HttpRequest, RestResponse> function) {
+		public BaseRoute (String identifier, String descriptor, Function<HttpRequest, RestObject> function) {
 			this (identifier, descriptor, EnumSet.of (Method.GET), function);
 		}
 
-		public BaseRoute (String identifier, String descriptor, EnumSet<Method> methods, Function<HttpRequest, RestResponse> function) {
+		public BaseRoute (String identifier, String descriptor, EnumSet<Method> methods, Function<HttpRequest, RestObject> function) {
 			if ( ! descriptor.startsWith ("/") ) {
 				throw new RuntimeException ("invalid descriptor: " + descriptor);
 			}
@@ -58,7 +58,7 @@ public abstract class UrlRoute {
 			return identifier;
 		}
 
-		@Override public Function<HttpRequest, RestResponse> getHandler () {
+		@Override public Function<HttpRequest, RestObject> getHandler () {
 			return function;
 		}
 
@@ -83,7 +83,7 @@ public abstract class UrlRoute {
 	}
 
 	public static class RootRoute extends BaseRoute {
-		public RootRoute (Function<HttpRequest, RestResponse> function) {
+		public RootRoute (Function<HttpRequest, RestObject> function) {
 			super ("root", "ROOT", function);
 		}
 
@@ -117,11 +117,11 @@ public abstract class UrlRoute {
 	 * urlrouter.
 	 */
 	public static class SimpleRoute extends BaseRoute {
-		public SimpleRoute (String identifier, String descriptor, Function<HttpRequest, RestResponse> function) {
+		public SimpleRoute (String identifier, String descriptor, Function<HttpRequest, RestObject> function) {
 			super (identifier, descriptor, function);
 		}
 
-		public SimpleRoute (String identifier, String descriptor, EnumSet<Method> methods, Function<HttpRequest, RestResponse> function) {
+		public SimpleRoute (String identifier, String descriptor, EnumSet<Method> methods, Function<HttpRequest, RestObject> function) {
 			super (identifier, descriptor, methods, function);
 		}
 
@@ -151,7 +151,7 @@ public abstract class UrlRoute {
 	abstract public boolean matches (Method method, String url);
 	abstract public boolean matches (Method method, String url, String [] parts);
 	abstract public Map<String, String> extractMatches (String url, String [] parts);
-	abstract public Function<HttpRequest, RestResponse> getHandler ();
+	abstract public Function<HttpRequest, RestObject> getHandler ();
 	abstract public String linkTo (Map<String, String> params);
 
 }
