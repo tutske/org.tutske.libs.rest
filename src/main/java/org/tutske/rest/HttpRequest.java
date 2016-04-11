@@ -1,4 +1,4 @@
-package org.tutske.websocket;
+package org.tutske.rest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

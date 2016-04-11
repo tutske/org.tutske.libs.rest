@@ -1,11 +1,11 @@
-package org.tutske.websocket;
+package org.tutske.rest;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.tutske.websocket.HttpRequest.Method.GET;
+import static org.tutske.rest.HttpRequest.Method.GET;
 
 import org.junit.Test;
-import org.tutske.websocket.UrlRoute.SimpleRoute;
+import org.tutske.rest.UrlRoute.SimpleRoute;
 
 
 public class UrlRouterTest {

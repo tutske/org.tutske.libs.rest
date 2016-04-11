@@ -1,10 +1,10 @@
 package org.tutske.main;
 
-import org.tutske.controllers.HelloWorldController;
-import org.tutske.websocket.UrlRouter;
+import static org.tutske.rest.HttpRequest.Method.POST;
+import static org.tutske.rest.UrlRoute.SimpleRoute;
 
-import static org.tutske.websocket.HttpRequest.Method.POST;
-import static org.tutske.websocket.UrlRoute.*;
+import org.tutske.controllers.HelloWorldController;
+import org.tutske.rest.UrlRouter;
 
 import java.util.EnumSet;
 

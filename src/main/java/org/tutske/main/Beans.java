@@ -7,8 +7,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.tutske.options.OptionStore;
-import org.tutske.websocket.RoutingHandler;
-import org.tutske.websocket.UrlRouter;
+import org.tutske.rest.RoutingHandler;
+import org.tutske.rest.UrlRouter;
 
 
 public class Beans {

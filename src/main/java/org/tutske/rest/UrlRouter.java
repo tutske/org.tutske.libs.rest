@@ -1,11 +1,11 @@
-package org.tutske.websocket;
+package org.tutske.rest;
+
+import static org.tutske.rest.HttpRequest.Method;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import static org.tutske.websocket.HttpRequest.*;
 
 
 public class UrlRouter {

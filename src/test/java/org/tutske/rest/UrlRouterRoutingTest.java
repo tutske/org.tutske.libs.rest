@@ -1,9 +1,9 @@
-package org.tutske.websocket;
+package org.tutske.rest;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.tutske.websocket.HttpRequest.Method.GET;
-import static org.tutske.websocket.UrlRoute.*;
+import static org.tutske.rest.HttpRequest.Method.GET;
+import static org.tutske.rest.UrlRoute.*;
 
 import org.junit.Before;
 import org.junit.Test;

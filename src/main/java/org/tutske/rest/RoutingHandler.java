@@ -1,4 +1,6 @@
-package org.tutske.websocket;
+package org.tutske.rest;
+
+import static org.tutske.rest.HttpRequest.Method;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.server.Request;
@@ -8,9 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-
-import static org.tutske.websocket.HttpRequest.*;
 
 
 public class RoutingHandler extends AbstractHandler {

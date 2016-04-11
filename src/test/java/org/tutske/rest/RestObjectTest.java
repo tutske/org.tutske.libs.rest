@@ -1,4 +1,4 @@
-package org.tutske.websocket;
+package org.tutske.rest;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Test;
-import org.tutske.rest.objects.RestObject;
 
 
 public class RestObjectTest {

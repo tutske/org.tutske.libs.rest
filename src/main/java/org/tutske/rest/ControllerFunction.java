@@ -1,7 +1,4 @@
-package org.tutske.websocket;
-
-
-import org.tutske.rest.objects.RestObject;
+package org.tutske.rest;
 
 
 @FunctionalInterface
