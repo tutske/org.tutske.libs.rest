@@ -121,4 +121,25 @@ public class RestObjectTest {
 		assertThat (json, is ("{\"list\":[1,2,3,4]}"));
 	}
 
+	@Test
+	public void it_should_keep_the_order_in_which_the_keys_where_added () {
+		RestObject first_second = new RestObject () {{
+			v ("first", 1);
+			v ("second", 2);
+		}};
+
+		RestObject second_first = new RestObject () {{
+			v ("second", 2);
+			v ("first", 1);
+		}};
+
+		assertThat (
+			gson.toJson (first_second.asJson ()),
+			is ("{\"first\":1,\"second\":2}")
+		);
+		assertThat (
+			gson.toJson (second_first.asJson ()),
+			is ("{\"second\":2,\"first\":1}")
+		);
+	}
 }

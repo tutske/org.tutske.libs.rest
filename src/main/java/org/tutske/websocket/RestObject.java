@@ -4,7 +4,7 @@ import java.util.*;
 
 
 public class RestObject {
-	private final Map<String, Object> data = new HashMap<String, Object> ();
+	private final Map<String, Object> data = new LinkedHashMap<String, Object> ();
 
 	public void v (String key, String value) {
 		data.put (key, value);
@@ -52,7 +52,7 @@ public class RestObject {
 
 			if ( targetValue == null ) {
 				if ( sourceValue instanceof Map ) {
-					targetValue = new HashMap<String, Object> ();
+					targetValue = new LinkedHashMap<String, Object> ();
 				} else if ( sourceValue instanceof List ) {
 					targetValue = list ();
 				}
@@ -78,7 +78,7 @@ public class RestObject {
 	private void merge (List<Object> target, List<Object> source) {
 		for ( Object sourceValue : source ) {
 			if ( sourceValue instanceof Map ) {
-				Map<String, Object> targetValue = new HashMap<String, Object> ();
+				Map<String, Object> targetValue = new LinkedHashMap<String, Object> ();
 				merge (targetValue, (Map<String, Object>) sourceValue);
 				target.add (targetValue);
 			} else if ( sourceValue instanceof List) {
