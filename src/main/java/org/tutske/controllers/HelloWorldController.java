@@ -1,4 +1,8 @@
-package org.tutske.websocket;
+package org.tutske.controllers;
+
+
+import org.tutske.websocket.HttpRequest;
+import org.tutske.websocket.RestObject;
 
 
 public class HelloWorldController {

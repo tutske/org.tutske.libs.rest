@@ -1,4 +1,4 @@
-package org.tutske.websocket;
+package org.tutske.main;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,6 +7,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.tutske.options.OptionStore;
+import org.tutske.websocket.RoutingHandler;
+import org.tutske.websocket.UrlRouter;
 
 
 public class Beans {

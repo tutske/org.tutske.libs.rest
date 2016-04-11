@@ -22,7 +22,7 @@ dependencies {
 jar {
 	manifest {
 		attributes (
-			'Main-Class': 'org.tutske.websocket.Main',
+			'Main-Class': 'org.tutske.main.Main',
 			'Class-Path': configurations.compile.collect ({ it.getName () }).join (' ')
 		)
 	}

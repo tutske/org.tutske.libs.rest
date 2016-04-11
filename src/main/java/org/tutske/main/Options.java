@@ -1,4 +1,4 @@
-package org.tutske.websocket;
+package org.tutske.main;
 
 import static org.tutske.options.Option.*;
 

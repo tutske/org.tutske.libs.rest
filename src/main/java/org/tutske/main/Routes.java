@@ -1,4 +1,7 @@
-package org.tutske.websocket;
+package org.tutske.main;
+
+import org.tutske.controllers.HelloWorldController;
+import org.tutske.websocket.UrlRouter;
 
 import static org.tutske.websocket.HttpRequest.Method.POST;
 import static org.tutske.websocket.UrlRoute.*;
