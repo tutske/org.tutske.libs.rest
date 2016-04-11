@@ -2,6 +2,7 @@ package org.tutske.websocket;
 
 import org.tutske.main.Options;
 import org.tutske.options.OptionStore;
+import org.tutske.rest.objects.RestObject;
 
 import javax.servlet.http.HttpServletResponse;
 

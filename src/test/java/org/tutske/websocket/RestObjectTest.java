@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Test;
+import org.tutske.rest.objects.RestObject;
 
 
 public class RestObjectTest {
@@ -61,7 +62,7 @@ public class RestObjectTest {
 	@Test
 	public void it_should_allow_lists_as_properties () {
 		RestObject object = new RestObject () {{
-			v ("key", array ());
+			v ("key", list ());
 		}};
 
 		String json = gson.toJson (object.asJson ());
@@ -142,4 +143,25 @@ public class RestObjectTest {
 			is ("{\"second\":2,\"first\":1}")
 		);
 	}
+
+	@Test
+	public void it_should_give_us_back_the_value () {
+		RestObject subject = new RestObject () {{
+			v ("first", 1);
+		}};
+
+		assertThat (subject.getNumber ("first"), is (1));
+	}
+
+	@Test
+	public void it_should_give_us_back_deeper_values () {
+		RestObject subject = new RestObject () {{
+			v ("first", new RestObject () {{
+				v ("second", "value");
+			}});
+		}};
+
+		assertThat (subject.getString ("first", "second"), is ("value"));
+	}
+
 }

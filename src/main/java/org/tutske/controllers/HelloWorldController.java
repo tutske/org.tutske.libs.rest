@@ -1,9 +1,9 @@
 package org.tutske.controllers;
 
-
+import org.tutske.rest.objects.RestArray;
+import org.tutske.rest.objects.RestObject;
 import org.tutske.websocket.HttpRequest;
 import org.tutske.websocket.ResponseException;
-import org.tutske.websocket.RestObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +37,7 @@ public class HelloWorldController {
 		Scanner scanner = new Scanner (stream);
 
 		RestObject result = new RestObject () {{
-			v ("lines", array ());
+			v ("lines", list ());
 		}};
 
 		while (scanner.hasNextLine ()) {
