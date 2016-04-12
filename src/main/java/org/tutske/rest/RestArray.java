@@ -5,7 +5,7 @@ import java.util.*;
 
 public class RestArray extends LinkedList<Object> {
 
-	protected RestArray v (Object ... objects ) {
+	protected RestArray v (Object ... objects) {
 		for ( Object object : objects ) {
 			add (object);
 		}
@@ -18,37 +18,37 @@ public class RestArray extends LinkedList<Object> {
 
 	@Override
 	public boolean add (Object o) {
-		assureValid (o);
+		RestUtil.assureValid (o);
 		return super.add (o);
 	}
 
 	@Override
 	public void add (int index, Object element) {
-		assureValid (element);
+		RestUtil.assureValid (element);
 		super.add (index, element);
 	}
 
 	@Override
 	public Object set (int index, Object element) {
-		assureValid (element);
+		RestUtil.assureValid (element);
 		return super.set (index, element);
 	}
 
 	@Override
 	public boolean addAll (Collection<?> c) {
-		c.forEach (this::assureValid);
+		c.forEach (RestUtil::assureValid);
 		return super.addAll (c);
 	}
 
 	@Override
 	public boolean addAll (int index, Collection<?> c) {
-		c.forEach (this::assureValid);
+		c.forEach (RestUtil::assureValid);
 		return super.addAll (c);
 	}
 
 	@Override
 	public boolean retainAll (Collection<?> c) {
-		c.forEach (this::assureValid);
+		c.forEach (RestUtil::assureValid);
 		return super.retainAll (c);
 	}
 
@@ -88,19 +88,6 @@ public class RestArray extends LinkedList<Object> {
 			}
 		}
 		return this;
-	}
-
-	/** utility **/
-
-	private void assureValid (Object object) {
-		if (
-			(object instanceof RestArray) || (object instanceof RestObject) ||
-			(object instanceof Boolean) || (object instanceof Number)
-		) {
-			return;
-		}
-
-		throw new RuntimeException ("Not a valid object: " + object);
 	}
 
 }

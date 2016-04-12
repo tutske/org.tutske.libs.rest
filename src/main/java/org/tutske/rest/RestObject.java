@@ -23,32 +23,32 @@ public class RestObject extends LinkedHashMap<String, Object> {
 
 	@Override
 	public Object put (String key, Object value) {
-		assureValid (value);
+		RestUtil.assureValid (value);
 		return super.put (key, value);
 	}
 
 	@Override
 	public void putAll (Map<? extends String, ?> m) {
-		m.forEach ((key, value) -> { assureValid (value); });
+		m.forEach ((key, value) -> { RestUtil.assureValid (value); });
 		super.putAll (m);
 	}
 
 	@Override
 	public Object putIfAbsent (String key, Object value) {
-		assureValid (value);
+		RestUtil.assureValid (value);
 		return super.putIfAbsent (key, value);
 	}
 
 
 	@Override
 	public boolean replace (String key, Object oldValue, Object newValue) {
-		assureValid (newValue);
+		RestUtil.assureValid (newValue);
 		return super.replace (key, oldValue, newValue);
 	}
 
 	@Override
 	public Object replace (String key, Object value) {
-		assureValid (value);
+		RestUtil.assureValid (value);
 		return super.replace (key, value);
 	}
 
@@ -153,18 +153,6 @@ public class RestObject extends LinkedHashMap<String, Object> {
 			current = current.getObject (path[i]);
 		}
 		return current.get (path[path.length - 1]);
-	}
-
-	private void assureValid (Object object) {
-		if (
-			(object instanceof RestArray) || (object instanceof RestObject) ||
-			(object instanceof Boolean) || (object instanceof Number) ||
-			(object instanceof String)
-		) {
-			return;
-		}
-
-		throw new RuntimeException ("Not a valid object: " + object);
 	}
 
 }
