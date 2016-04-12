@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 
 public class RoutingHandler extends AbstractHandler {
@@ -34,11 +35,15 @@ public class RoutingHandler extends AbstractHandler {
 
 		Object result;
 		try {
-			result = route.getHandler ().apply (null).asJson ();
+			Map<String, String> data = route.extractMatches (s, s.substring (1).split ("/"));
+			HttpRequest r = new HttpRequest (request, response, data);
+			result = route.getHandler ().apply (r).asJson ();
 		} catch (ResponseException e) {
 			result = e.asJson ();
 		} catch (Exception e) {
-			result = new ResponseException (e.getMessage ()).asJson ();
+			e.printStackTrace ();
+			String msg = e.getMessage ();
+			result = new ResponseException (msg == null ? "" : msg).asJson ();
 		}
 
 		response.setContentType ("application/json");
