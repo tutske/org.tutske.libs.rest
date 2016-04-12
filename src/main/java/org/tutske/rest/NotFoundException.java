@@ -5,9 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public class NotFoundException extends ResponseException {
 
-	protected final String type = "/not_found";
-	protected final String title = "Not Found";
-	protected final int status = HttpServletResponse.SC_NOT_FOUND;
+	{
+		type = "/not_found";
+		title = "Not Found";
+		status = HttpServletResponse.SC_NOT_FOUND;
+	}
 
 	public NotFoundException () {
 	}

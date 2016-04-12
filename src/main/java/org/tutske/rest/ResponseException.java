@@ -9,10 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 public class ResponseException extends RuntimeException {
 
 	protected final String baseUrl = OptionStore.get (Options.BASE_URL);
-	protected final String type = "/interal_server_error";
-	protected final String title = "Internal Server Error";
-	protected final int status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 	protected final RestObject data = new RestObject ();
+	protected String type;
+	protected String title;
+	protected int status;
+
+	{
+		type = "/interal_server_error";
+		title = "Internal Server Error";
+		status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+	}
 
 	public ResponseException () {}
 	public ResponseException (String message) { super (message); }
