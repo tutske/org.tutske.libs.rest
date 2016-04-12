@@ -24,6 +24,7 @@ public class NotFoundHandler extends AbstractHandler {
 		ResponseException exception = new NotFoundException ("Could not find resource");
 		exception.addExtra (new RestObject () {{
 			v ("requested", s);
+			v ("method", request.getMethod ());
 		}});
 
 		gson.toJson (exception.asJson (), response.getWriter ());
