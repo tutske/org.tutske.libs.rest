@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 
-public class UrlRouter {
+public class UrlRouter<T> {
 
-	private final List<UrlRoute> routes = new LinkedList<UrlRoute> ();
-	private final Map<String, UrlRoute> names = new HashMap<String, UrlRoute> ();
+	private final List<UrlRoute<T>> routes = new LinkedList<UrlRoute<T>> ();
+	private final Map<String, UrlRoute<T>> names = new HashMap<String, UrlRoute<T>> ();
 
 	/**
 	 * Just some syntax to have a nicer way to group routes when adding them to the
@@ -33,11 +33,11 @@ public class UrlRouter {
 	 * @param routes
 	 * @return
 	 */
-	public UrlRouter add (String section, UrlRoute ... routes) {
+	public UrlRouter<T> add (String section, UrlRoute<T> ... routes) {
 		return add (routes);
 	}
 
-	public UrlRouter add (UrlRoute ... routes) {
+	public UrlRouter<T> add (UrlRoute<T> ... routes) {
 		for ( UrlRoute route : routes ) {
 			this.names.put (route.getIdentifier (), route);
 			this.routes.add (route);
@@ -45,7 +45,7 @@ public class UrlRouter {
 		return this;
 	}
 
-	public UrlRoute route (Method method, String url) {
+	public UrlRoute<T> route (Method method, String url) {
 		String [] parts = url.substring (1).split ("/");
 		for ( UrlRoute route : routes ) {
 			if ( route.matches (method, url, parts) ) {

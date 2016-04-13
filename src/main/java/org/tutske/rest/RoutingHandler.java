@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class RoutingHandler extends AbstractHandler {
 
-	private final UrlRouter router;
+	private final UrlRouter<ControllerFunction> router;
 	private final Gson gson;
 
 	public RoutingHandler (UrlRouter router, Gson gson) {
@@ -27,7 +27,7 @@ public class RoutingHandler extends AbstractHandler {
 	public void handle (String s, Request base, HttpServletRequest request, HttpServletResponse response)
 	throws IOException, ServletException {
 		Method method = Method.valueOf (request.getMethod ());
-		UrlRoute route = router.route (method, s);
+		UrlRoute<ControllerFunction> route = router.route (method, s);
 
 		if ( route == null ) {
 			return;

@@ -26,26 +26,26 @@ import java.util.Map;
  * the url within the controller. Not all possible scenarios have to be handed by the
  * urlrouter.
  */
-public abstract class UrlRoute {
+public abstract class UrlRoute<T> {
 
-	private abstract static class BaseRoute extends UrlRoute {
+	private abstract static class BaseRoute<T> extends UrlRoute<T> {
 		protected final String identifier;
-		protected final ControllerFunction function;
+		protected final T handler;
 		protected final EnumSet<Method> methods;
 		protected final String [] descriptor;
 		protected final boolean [] shouldMatch;
 
-		public BaseRoute (String identifier, String descriptor, ControllerFunction function) {
-			this (identifier, descriptor, EnumSet.of (Method.GET), function);
+		public BaseRoute (String identifier, String descriptor, T handler) {
+			this (identifier, descriptor, EnumSet.of (Method.GET), handler);
 		}
 
-		public BaseRoute (String identifier, String descriptor, EnumSet<Method> methods, ControllerFunction function) {
+		public BaseRoute (String identifier, String descriptor, EnumSet<Method> methods, T handler) {
 			if ( ! descriptor.startsWith ("/") ) {
 				throw new RuntimeException ("invalid descriptor: " + descriptor);
 			}
 
 			this.identifier = identifier;
-			this.function = function;
+			this.handler = handler;
 			this.methods = methods;
 			this.descriptor = descriptor.substring (1).split ("/");
 			this.shouldMatch = new boolean [this.descriptor.length];
@@ -57,8 +57,8 @@ public abstract class UrlRoute {
 			return identifier;
 		}
 
-		@Override public ControllerFunction getHandler () {
-			return function;
+		@Override public T getHandler () {
+			return handler;
 		}
 
 		@Override public boolean matches (Method method, String url) {
@@ -81,9 +81,9 @@ public abstract class UrlRoute {
 		}
 	}
 
-	public static class RootRoute extends BaseRoute {
-		public RootRoute (ControllerFunction function) {
-			super ("root", "ROOT", function);
+	public static class RootRoute<T> extends BaseRoute<T> {
+		public RootRoute (T handler) {
+			super ("root", "ROOT", handler);
 		}
 
 		@Override public boolean matches (Method method, String url, String [] parts) {
@@ -92,6 +92,16 @@ public abstract class UrlRoute {
 
 		@Override public Map<String, String> extractMatches (String url, String [] parts) {
 			return new HashMap<String, String> ();
+		}
+	}
+
+	public static class ControllerRoute extends SimpleRoute<ControllerFunction> {
+		public ControllerRoute (String identifier, String descriptor, ControllerFunction handler) {
+			super (identifier, descriptor, handler);
+		}
+
+		public ControllerRoute (String identifier, String descriptor, EnumSet<Method> methods, ControllerFunction handler) {
+			super (identifier, descriptor, methods, handler);
 		}
 	}
 
@@ -115,13 +125,13 @@ public abstract class UrlRoute {
 	 * the url within the controller. Not all passible senarios have to be handed bo the
 	 * urlrouter.
 	 */
-	public static class SimpleRoute extends BaseRoute {
-		public SimpleRoute (String identifier, String descriptor, ControllerFunction function) {
-			super (identifier, descriptor, function);
+	public static class SimpleRoute<T> extends BaseRoute<T> {
+		public SimpleRoute (String identifier, String descriptor, T handler) {
+			super (identifier, descriptor, handler);
 		}
 
-		public SimpleRoute (String identifier, String descriptor, EnumSet<Method> methods, ControllerFunction function) {
-			super (identifier, descriptor, methods, function);
+		public SimpleRoute (String identifier, String descriptor, EnumSet<Method> methods, T handler) {
+			super (identifier, descriptor, methods, handler);
 		}
 
 		@Override public boolean matches (Method method, String url, String [] parts) {
@@ -150,7 +160,7 @@ public abstract class UrlRoute {
 	abstract public boolean matches (Method method, String url);
 	abstract public boolean matches (Method method, String url, String [] parts);
 	abstract public Map<String, String> extractMatches (String url, String [] parts);
-	abstract public ControllerFunction getHandler ();
+	abstract public T getHandler ();
 	abstract public String linkTo (Map<String, String> params);
 
 }
