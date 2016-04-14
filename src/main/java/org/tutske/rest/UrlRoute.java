@@ -90,8 +90,8 @@ public abstract class UrlRoute<T> {
 			return parts.length == 1 && "".equals (parts[1]);
 		}
 
-		@Override public Map<String, String> extractMatches (String url, String [] parts) {
-			return new HashMap<String, String> ();
+		@Override public ParameterBag extractMatches (String url, String [] parts) {
+			return new ParameterBag ();
 		}
 	}
 
@@ -146,11 +146,11 @@ public abstract class UrlRoute<T> {
 			return true;
 		}
 
-		@Override public Map<String, String> extractMatches (String url, String [] parts) {
-			Map<String, String> extracted = new HashMap<String, String> ();
+		@Override public ParameterBag extractMatches (String url, String [] parts) {
+			ParameterBag extracted = new ParameterBag ();
 			for ( int i = 0; i < descriptor.length; i++ ) {
 				if ( shouldMatch [i] ) { continue; }
-				extracted.put (descriptor[i].substring (1), parts[i]);
+				extracted.add (descriptor[i].substring (1), parts[i]);
 			}
 			return extracted;
 		}
@@ -159,7 +159,7 @@ public abstract class UrlRoute<T> {
 	abstract public String getIdentifier ();
 	abstract public boolean matches (Method method, String url);
 	abstract public boolean matches (Method method, String url, String [] parts);
-	abstract public Map<String, String> extractMatches (String url, String [] parts);
+	abstract public ParameterBag extractMatches (String url, String [] parts);
 	abstract public T getHandler ();
 	abstract public String linkTo (Map<String, String> params);
 

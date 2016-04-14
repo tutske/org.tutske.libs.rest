@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 
 public class RoutingHandler extends AbstractHandler {
@@ -35,7 +34,7 @@ public class RoutingHandler extends AbstractHandler {
 
 		Object result;
 		try {
-			Map<String, String> data = route.extractMatches (s, s.substring (1).split ("/"));
+			ParameterBag data = route.extractMatches (s, s.substring (1).split ("/"));
 			HttpRequest r = new HttpRequest (request, response, data);
 			result = route.getHandler ().apply (r).asJson ();
 		} catch (ResponseException e) {

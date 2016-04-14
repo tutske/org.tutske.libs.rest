@@ -17,14 +17,14 @@ public class HttpRequest {
 
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
-	private final Map<String, String> path;
-	private final Map<String, List<String>> query;
+	private final ParameterBag path;
+	private final ParameterBag queryParams;
 
-	public HttpRequest (HttpServletRequest request, HttpServletResponse response, Map<String, String> path) {
+	public HttpRequest (HttpServletRequest request, HttpServletResponse response, ParameterBag path) {
 		this.request = request;
 		this.response = response;
 		this.path = path;
-		this.query = new HashMap<String, List<String>> ();
+		this.queryParams = new ParameterBag ();
 	}
 
 	public HttpServletRequest getServletRequest () {
@@ -47,22 +47,13 @@ public class HttpRequest {
 		return request.getRequestURI ();
 	}
 
-	public String getPathParameter (String name) {
-		return getPathParameter (name, String.class);
+	public ParameterBag pathParams () {
+		return path;
 	}
 
-	public <T> T getPathParameter (String name, Class<T> clazz) {
-		return (T) path.get (name);
-	}
-
-	public String getQueryParameter (String name) {
-		return getQueryParameter (name, String.class);
-	}
-
-	public <T> T getQueryParameter (String name, Class<T> clazz) {
-		if ( query.isEmpty () ) { parseQueryString (); }
-		if ( ! query.containsKey (name) ) { return null; }
-		return (T) parse (query.get (name).get (0), clazz);
+	public ParameterBag queryParams () {
+		if ( queryParams.isEmpty () ) { parseQueryString (); }
+		return queryParams;
 	}
 
 	public String getBody () {
@@ -88,31 +79,20 @@ public class HttpRequest {
 
 		for ( String part : queryString.split ("&") ) {
 			String [] split = part.split ("=", 2);
-			String key = URLDecoder.decode (split[0]);
-
-			if ( ! query.containsKey (key) ) {
-				query.put (key, new LinkedList<String> ());
-			}
+			String key = decodeQueryString (split[0]);
 
 			if ( split.length == 2 && ! split[1].isEmpty () ) {
-				String value = URLDecoder.decode (split[1]);
-				query.get (key).add (value);
+				String value = decodeQueryString (split[1]);
+				queryParams.add (key, value);
 			}
 		}
 	}
 
-	private Object parse (String value, Class<?> clazz) {
-		if ( String.class.equals (clazz) ) {
-			return value;
-		} else if ( Integer.class.equals (clazz) ) {
-			return Integer.parseInt (value);
-		} else if ( Float.class.equals (clazz) ) {
-			return Float.parseFloat (value);
-		} else if ( Boolean.class.equals (clazz) ) {
-			return Boolean.parseBoolean (value);
+	private String decodeQueryString (String encoded) {
+		try { return URLDecoder.decode (encoded, "UTF-8"); }
+		catch ( UnsupportedEncodingException exception ) {
+			throw new RuntimeException ("NO UTF-8 support?", exception);
 		}
-		String msg = "Clazz not supported for convertion: " + value + " (" + clazz + ")";
-		throw new RuntimeException (msg);
 	}
 
 }
