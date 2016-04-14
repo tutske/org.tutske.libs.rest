@@ -20,16 +20,22 @@ configurations {
 	integrationRuntime.extendsFrom testRuntime
 }
 
+task copyItDeps (type: Copy) {
+	from configurations.integrationRuntime
+	into "${buildDir}/libs"
+}
+
 idea {
 	module {
 		scopes.TEST.plus += [ configurations.integrationCompile ]
 	}
 }
 
-task it (type: Test, dependsOn: ['assemble', 'itJar', 'copyDeps'] ) {
+task it (type: Test, dependsOn: ['assemble', 'itJar', 'copyDeps', 'copyItDeps'] ) {
 	testClassesDir = sourceSets.integration.output.classesDir
 	classpath = sourceSets.integration.runtimeClasspath
 	environment 'TEST_JAR_PATH', itJar.archivePath
 	onOutput { descriptor, event -> print (event.message) }
 	reports.html.destination =  "${buildDir}/integration-report"
+	outputs.upToDateWhen { false }
 }
