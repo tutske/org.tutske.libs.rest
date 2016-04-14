@@ -4,8 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.*;
 
 
@@ -52,7 +50,9 @@ public class HttpRequest {
 	}
 
 	public ParameterBag queryParams () {
-		if ( queryParams.isEmpty () ) { parseQueryString (); }
+		if ( queryParams.isEmpty () ) {
+			QueryStringDecoder.decodeInto (queryParams, request.getQueryString ());
+		}
 		return queryParams;
 	}
 
@@ -71,28 +71,6 @@ public class HttpRequest {
 
 	public InputStream getInputStream () throws IOException {
 		return request.getInputStream ();
-	}
-
-	private void parseQueryString () {
-		String queryString = request.getQueryString ();
-		if ( queryString == null || queryString.isEmpty () ) { return; }
-
-		for ( String part : queryString.split ("&") ) {
-			String [] split = part.split ("=", 2);
-			String key = decodeQueryString (split[0]);
-
-			if ( split.length == 2 && ! split[1].isEmpty () ) {
-				String value = decodeQueryString (split[1]);
-				queryParams.add (key, value);
-			}
-		}
-	}
-
-	private String decodeQueryString (String encoded) {
-		try { return URLDecoder.decode (encoded, "UTF-8"); }
-		catch ( UnsupportedEncodingException exception ) {
-			throw new RuntimeException ("NO UTF-8 support?", exception);
-		}
 	}
 
 }

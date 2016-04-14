@@ -105,6 +105,12 @@ public abstract class UrlRoute<T> {
 		}
 	}
 
+	public static class SocketRoute extends SimpleRoute<SocketFunction> {
+		public SocketRoute (String identifier, String descriptor, SocketFunction handler) {
+			super (identifier, descriptor, handler);
+		}
+	}
+
 	/**
 	 * This will work for url that only have exact matching parts or a variable part.
 	 * Things such as `/fixed/part/:variable/or/:other/variables`.

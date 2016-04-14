@@ -17,7 +17,7 @@ public class RoutingHandler extends AbstractHandler {
 	private final UrlRouter<ControllerFunction> router;
 	private final Gson gson;
 
-	public RoutingHandler (UrlRouter router, Gson gson) {
+	public RoutingHandler (UrlRouter<ControllerFunction> router, Gson gson) {
 		this.router = router;
 		this.gson = gson;
 	}
