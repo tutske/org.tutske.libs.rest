@@ -399,4 +399,14 @@ public class ParameterBagTest {
 		assertThat (bag.get ("key", ParameterBagTest.class), is (false));
 	}
 
+	@Test
+	public void it_should_know_it_has_keys_even_when_there_is_no_value () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key");
+		}};
+
+		assertThat (bag.containsKey ("key"), is (true));
+		assertThat (bag.get ("key"), nullValue ());
+	}
+
 }
