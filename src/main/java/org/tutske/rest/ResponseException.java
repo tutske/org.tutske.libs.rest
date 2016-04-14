@@ -1,14 +1,19 @@
 package org.tutske.rest;
 
-import org.tutske.main.Options;
-import org.tutske.options.OptionStore;
-
 import javax.servlet.http.HttpServletResponse;
 
 
 public class ResponseException extends RuntimeException {
 
-	protected final String baseUrl = OptionStore.get (Options.BASE_URL);
+	private static String BASE_URL = null;
+
+	public static void configureBaseUrl (String baseUrl) {
+		if ( BASE_URL == null ) {
+			BASE_URL = baseUrl;
+		}
+	}
+
+	protected final String baseUrl = BASE_URL;
 	protected final RestObject data = new RestObject ();
 	protected String type;
 	protected String title;
