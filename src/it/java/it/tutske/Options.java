@@ -1,4 +1,4 @@
-package org.tutske.main;
+package it.tutske;
 
 import static org.tutske.options.Option.*;
 

@@ -1,4 +1,4 @@
-package org.tutske.main;
+package it.tutske;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,7 +9,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.tutske.options.OptionStore;
 import org.tutske.rest.NotFoundHandler;
 import org.tutske.rest.RoutingHandler;
-import org.tutske.rest.UrlRouter;
+import org.tutske.rest.SocketHandler;
 
 
 public class Beans {
@@ -27,12 +27,13 @@ public class Beans {
 		HandlerList handlers = new HandlerList ();
 		handlers.addHandler (resourceHandler ());
 		handlers.addHandler (routingHandler ());
+		handlers.addHandler (socketHandler ());
 		handlers.addHandler (notFoundHandler ());
 		return handlers;
 	}
 
 	public Handler resourceHandler () {
-		String path = Main.class.getClassLoader ()
+		String path = IntegrationMain.class.getClassLoader ()
 			.getResource (staticFilesPath)
 			.toExternalForm ();
 
@@ -47,15 +48,15 @@ public class Beans {
 	}
 
 	public Handler routingHandler () {
-		return new RoutingHandler (router (), gson ());
-	}
-
-	public UrlRouter router () {
-		return new Routes ().router;
+		return new RoutingHandler (Routes.router, gson ());
 	}
 
 	public Gson gson () {
 		return new GsonBuilder ().create ();
+	}
+
+	public Handler socketHandler () {
+		return new SocketHandler (Routes.sockets);
 	}
 
 }
