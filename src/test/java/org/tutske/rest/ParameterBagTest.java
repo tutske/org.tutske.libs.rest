@@ -336,4 +336,67 @@ public class ParameterBagTest {
 		assertThat (bag.containsValue ("secondary value"), is (true));
 	}
 
+	@Test
+	public void it_should_parse_string_values_to_integers () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "1");
+		}};
+
+		assertThat (bag.get ("key", Integer.class), is (1));
+	}
+
+	@Test
+	public void it_should_parse_string_values_to_longs () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "1");
+		}};
+
+		assertThat (bag.get ("key", Long.class), is (1L));
+	}
+
+	@Test
+	public void it_should_parse_string_values_to_floats () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "1");
+		}};
+
+		assertThat (bag.get ("key", Float.class), is (1F));
+	}
+
+	@Test
+	public void it_should_parse_string_values_to_floats_with_decimal_part () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "1.2");
+		}};
+
+		assertThat (bag.get ("key", Float.class), is (1.2F));
+	}
+
+	@Test
+	public void it_should_parse_string_values_to_booleans () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "false");
+		}};
+
+		assertThat (bag.get ("key", Boolean.class), is (false));
+	}
+
+	@Test (expected = ResponseException.class)
+	public void it_should_give_a_response_exception_when_parsing_of_values_fails () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "one");
+		}};
+
+		assertThat (bag.get ("key", Integer.class), is (false));
+	}
+
+	@Test (expected = RuntimeException.class)
+	public void it_should_complain_when_asking_to_convert_to_an_unknown_class () {
+		ParameterBag bag = new ParameterBag () {{
+			add ("key", "one");
+		}};
+
+		assertThat (bag.get ("key", ParameterBagTest.class), is (false));
+	}
+
 }

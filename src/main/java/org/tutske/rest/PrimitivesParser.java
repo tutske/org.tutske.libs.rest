@@ -1,28 +1,32 @@
 package org.tutske.rest;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+
 public class PrimitivesParser {
 
 	private static final String ERROR_FORMAT = "Clazz not supported for conversion: %s (%s)";
 
+	private static final Map<Class<?>, Function<String, ?>> converters = new HashMap<> ();
+
+	static {
+		converters.put (String.class, Function.identity ());
+		converters.put (Integer.class, Integer::parseInt);
+		converters.put (Long.class, Long::parseLong);
+		converters.put (Float.class, Float::parseFloat);
+		converters.put (Double.class, Double::parseDouble);
+		converters.put (Boolean.class, Boolean::parseBoolean);
+	}
+
 	public static <T> T parse (String value, Class<T> clazz) {
-		Object result = null;
-
-		if ( String.class.equals (clazz) ) {
-			result = value;
-		} else if ( Integer.class.equals (clazz) ) {
-			result = Integer.parseInt (value);
-		} else if ( Float.class.equals (clazz) ) {
-			result = Float.parseFloat (value);
-		} else if ( Boolean.class.equals (clazz) ) {
-			result = Boolean.parseBoolean (value);
-		}
-
-		if ( result == null ) {
+		if ( ! converters.containsKey (clazz) ) {
 			String msg = String.format (ERROR_FORMAT, value, clazz);
 			throw new RuntimeException (msg);
 		}
 
-		return (T) value;
+		return (T) converters.get (clazz).apply (value);
 	}
 
 }

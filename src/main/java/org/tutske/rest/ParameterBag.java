@@ -72,6 +72,31 @@ public class ParameterBag implements Map<String, String> {
 		return true;
 	}
 
+	@Override
+	public String get (Object key) {
+		return get (key, String.class);
+	}
+
+	public <T> T get (Object key, Class<T> clazz) {
+		List<String> values = data.get (key);
+
+		if ( values == null || values.isEmpty () ) {
+			return null;
+		}
+
+		try {
+			return PrimitivesParser.parse (values.get (0), clazz);
+		} catch ( NumberFormatException excetion ) {
+			throw new WrongValueException (
+				"The value is not of the right type.",
+				new RestObject () {{
+					v ("value", values.get (0));
+					v ("type", clazz.getName ());
+				}}
+			);
+		}
+	}
+
 	public Set<String> getAll (Object key) {
 		List<String> values = data.get (key);
 		if ( values == null ) {
@@ -85,15 +110,6 @@ public class ParameterBag implements Map<String, String> {
 		String current = get (key);
 		boolean success = replace (key, current, value);
 		return success ? current : null;
-	}
-
-	@Override
-	public String get (Object key) {
-		List<String> values = data.get (key);
-		if ( values == null || values.isEmpty () ) {
-			return null;
-		}
-		return values.get (0);
 	}
 
 	@Override
