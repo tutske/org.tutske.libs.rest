@@ -5,6 +5,7 @@ import static org.tutske.rest.UrlRoute.*;
 
 import it.tutske.controllers.ChatSocket;
 import it.tutske.controllers.HelloWorldController;
+import it.tutske.controllers.JavaSocket;
 import org.tutske.rest.ControllerFunction;
 import org.tutske.rest.SocketFunction;
 import org.tutske.rest.UrlRouter;
@@ -27,6 +28,8 @@ public class Routes {
 
 	public static final UrlRouter<SocketFunction> sockets = new UrlRouter<SocketFunction> ().add (
 		"basic socket",
-		new SocketRoute ("chat socket", "/chat/:room", ChatSocket::create)
+		new SocketRoute ("chat socket", "/chat/:room", ChatSocket::create),
+		new SocketRoute ("java socket", "/java", JavaSocket::create)
 	);
+
 }

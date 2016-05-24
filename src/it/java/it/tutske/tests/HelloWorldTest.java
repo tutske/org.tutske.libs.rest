@@ -1,7 +1,5 @@
 package it.tutske.tests;
 
-import it.tutske.util.CommandRunner;
-import it.tutske.util.Environment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,19 +12,17 @@ import java.util.Scanner;
 
 public class HelloWorldTest {
 
-	private static final int PORT = 18080;
-	private Process server;
+	private TestUtils.Application application;
 
 	@Before
 	public void setup () throws Exception {
-		Environment env = new Environment ().with ("TS_WEBSOCKET_PORT", "" + PORT);
-		server = CommandRunner.runJar (env);
-		Thread.sleep (600);
+		application = TestUtils.getApplication ();
+		application.start ();
 	}
 
 	@After
-	public void teardown () throws InterruptedException {
-		server.destroy ();
+	public void teardown () throws Exception {
+		application.stop ();
 	}
 
 	@Test
@@ -43,7 +39,7 @@ public class HelloWorldTest {
 	private String request (String method, String path) throws IOException {
 		StringBuilder builder = new StringBuilder ();
 
-		HttpURLConnection connection = (HttpURLConnection) new URL ("http", "localhost", PORT, path).openConnection ();
+		HttpURLConnection connection = (HttpURLConnection) TestUtils.getUrl (path).openConnection ();
 		connection.setRequestMethod (method);
 
 		connection.connect ();
