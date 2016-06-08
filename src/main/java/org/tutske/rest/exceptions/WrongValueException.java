@@ -1,4 +1,7 @@
-package org.tutske.rest;
+package org.tutske.rest.exceptions;
+
+import org.tutske.rest.data.RestObject;
+import org.tutske.rest.exceptions.ResponseException;
 
 import javax.servlet.http.HttpServletResponse;
 

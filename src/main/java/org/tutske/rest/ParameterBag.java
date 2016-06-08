@@ -1,5 +1,8 @@
 package org.tutske.rest;
 
+import org.tutske.rest.data.RestObject;
+import org.tutske.rest.exceptions.WrongValueException;
+
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;

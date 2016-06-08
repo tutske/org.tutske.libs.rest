@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Test;
+import org.tutske.rest.data.RestObject;
 
 
 public class RestObjectTest {

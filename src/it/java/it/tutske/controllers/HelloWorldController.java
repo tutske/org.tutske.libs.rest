@@ -1,9 +1,9 @@
 package it.tutske.controllers;
 
-import org.tutske.rest.RestArray;
-import org.tutske.rest.RestObject;
+import org.tutske.rest.data.RestArray;
+import org.tutske.rest.data.RestObject;
 import org.tutske.rest.HttpRequest;
-import org.tutske.rest.ResponseException;
+import org.tutske.rest.exceptions.ResponseException;
 
 import java.util.Random;
 

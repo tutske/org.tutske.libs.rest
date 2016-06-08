@@ -1,4 +1,4 @@
-package org.tutske.rest;
+package org.tutske.rest.data;
 
 import java.util.*;
 

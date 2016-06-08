@@ -3,7 +3,6 @@ package org.tutske.rest;
 import static org.tutske.rest.HttpRequest.Method;
 
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Map;
 
 

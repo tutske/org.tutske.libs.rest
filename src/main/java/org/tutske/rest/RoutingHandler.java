@@ -5,6 +5,7 @@ import static org.tutske.rest.HttpRequest.Method;
 import com.google.gson.Gson;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.tutske.rest.exceptions.ResponseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

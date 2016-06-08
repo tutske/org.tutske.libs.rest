@@ -2,7 +2,7 @@ package it.tutske;
 
 import org.eclipse.jetty.server.Server;
 import org.tutske.options.OptionStore;
-import org.tutske.rest.ResponseException;
+import org.tutske.rest.exceptions.ResponseException;
 
 
 public class IntegrationMain {
