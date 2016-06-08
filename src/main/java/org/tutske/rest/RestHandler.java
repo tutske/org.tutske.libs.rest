@@ -13,12 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-public class RoutingHandler extends AbstractHandler {
+public class RestHandler extends AbstractHandler {
 
 	private final UrlRouter<ControllerFunction> router;
 	private final Gson gson;
 
-	public RoutingHandler (UrlRouter<ControllerFunction> router, Gson gson) {
+	public RestHandler (UrlRouter<ControllerFunction> router, Gson gson) {
 		this.router = router;
 		this.gson = gson;
 	}

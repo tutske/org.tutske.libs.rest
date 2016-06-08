@@ -8,7 +8,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.tutske.options.OptionStore;
 import org.tutske.rest.NotFoundHandler;
-import org.tutske.rest.RoutingHandler;
+import org.tutske.rest.RestHandler;
 import org.tutske.rest.SocketHandler;
 
 
@@ -48,7 +48,7 @@ public class Beans {
 	}
 
 	public Handler routingHandler () {
-		return new RoutingHandler (Routes.router, gson ());
+		return new RestHandler (Routes.router, gson ());
 	}
 
 	public Gson gson () {
