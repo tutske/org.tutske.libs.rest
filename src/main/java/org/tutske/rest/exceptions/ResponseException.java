@@ -24,7 +24,7 @@ public class ResponseException extends RuntimeException {
 	{
 		type = "/interal_server_error";
 		title = "Internal Server Error";
-		status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+		status = HttpServletResponse.SC_BAD_REQUEST;
 	}
 
 	public ResponseException () {}
@@ -40,6 +40,10 @@ public class ResponseException extends RuntimeException {
 		this.data.merge (data);
 	}
 
+	public int getStatusCode () {
+		return this.status;
+	}
+
 	public void addExtra (RestObject extra) {
 		this.data.merge (extra);
 	}
@@ -52,4 +56,5 @@ public class ResponseException extends RuntimeException {
 			v ("detail", getMessage ());
 		}}.merge (this.data).asJson ();
 	}
+
 }
