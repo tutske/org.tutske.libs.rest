@@ -1,20 +1,19 @@
 package it.tutske;
 
-import org.eclipse.jetty.server.Server;
 import org.tutske.options.OptionStore;
-import org.tutske.rest.exceptions.ResponseException;
+import org.tutske.rest.Server;
 
 
 public class IntegrationMain {
 
 	public static void main (String [] args) throws Exception {
 		Options.initialize (args);
-		ResponseException.configureBaseUrl (OptionStore.get (Options.BASE_URL));
 
-		Server server = new Beans ().server ();
-
-		server.start ();
-		server.join ();
+		new Server (OptionStore.get (Options.BASE_URL), OptionStore.get (Options.PORT))
+			.configureStaticContent (OptionStore.get (Options.STATIC_PATH))
+			.configureRoutes (Routes.router)
+			.configureSocketRoutes (Routes.sockets)
+			.start ();
 	}
 
 }
