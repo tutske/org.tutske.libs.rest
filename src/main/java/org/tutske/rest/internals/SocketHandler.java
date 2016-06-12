@@ -1,10 +1,11 @@
-package org.tutske.rest;
+package org.tutske.rest.internals;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tutske.rest.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

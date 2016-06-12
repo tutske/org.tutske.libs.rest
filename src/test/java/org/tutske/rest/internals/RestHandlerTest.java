@@ -1,4 +1,4 @@
-package org.tutske.rest;
+package org.tutske.rest.internals;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.anyInt;
@@ -12,7 +12,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.tutske.rest.ControllerFunction;
+import org.tutske.rest.HttpRequest;
 import org.tutske.rest.UrlRoute.ControllerRoute;
+import org.tutske.rest.UrlRouter;
 import org.tutske.rest.data.RestObject;
 import org.tutske.rest.exceptions.ResponseException;
 

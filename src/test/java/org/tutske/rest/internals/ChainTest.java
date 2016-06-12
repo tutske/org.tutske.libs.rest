@@ -1,11 +1,10 @@
 package org.tutske.rest.internals;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.intThat;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
+import org.tutske.rest.Filter;
 import org.tutske.rest.ThrowingFunction;
 
 import java.util.Arrays;

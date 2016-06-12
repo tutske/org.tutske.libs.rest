@@ -2,6 +2,7 @@ package org.tutske.rest;
 
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
+import org.tutske.rest.internals.QueryStringDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 

@@ -1,4 +1,7 @@
-package org.tutske.rest.internals;
+package org.tutske.rest;
+
+
+import org.tutske.rest.internals.Chain;
 
 
 @FunctionalInterface

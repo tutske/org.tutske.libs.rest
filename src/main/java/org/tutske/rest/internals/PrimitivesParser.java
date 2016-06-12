@@ -1,4 +1,4 @@
-package org.tutske.rest;
+package org.tutske.rest.internals;
 
 import java.util.HashMap;
 import java.util.Map;

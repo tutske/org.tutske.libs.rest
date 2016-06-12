@@ -1,5 +1,6 @@
 package org.tutske.rest.internals;
 
+import org.tutske.rest.Filter;
 import org.tutske.rest.ThrowingFunction;
 
 import java.util.LinkedList;

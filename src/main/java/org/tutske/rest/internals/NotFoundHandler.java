@@ -1,4 +1,4 @@
-package org.tutske.rest;
+package org.tutske.rest.internals;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.server.Request;

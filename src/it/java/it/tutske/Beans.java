@@ -7,9 +7,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.tutske.options.OptionStore;
-import org.tutske.rest.NotFoundHandler;
-import org.tutske.rest.RestHandler;
-import org.tutske.rest.SocketHandler;
+import org.tutske.rest.internals.NotFoundHandler;
+import org.tutske.rest.internals.RestHandler;
+import org.tutske.rest.internals.SocketHandler;
 
 
 public class Beans {

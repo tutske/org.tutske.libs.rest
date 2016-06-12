@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.tutske.rest.ControllerFunction;
+import org.tutske.rest.Filter;
 import org.tutske.rest.HttpRequest;
 import org.tutske.rest.UrlRoute.SimpleRoute;
 import org.tutske.rest.data.RestObject;

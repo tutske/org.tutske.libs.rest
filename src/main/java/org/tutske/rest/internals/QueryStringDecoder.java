@@ -1,4 +1,6 @@
-package org.tutske.rest;
+package org.tutske.rest.internals;
+
+import org.tutske.rest.ParameterBag;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
