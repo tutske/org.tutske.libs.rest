@@ -8,6 +8,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
+import org.tutske.rest.data.RestObject;
 import org.tutske.rest.exceptions.ResponseException;
 
 import javax.servlet.ServletException;
@@ -21,6 +22,11 @@ public class RestHandler extends AbstractHandler {
 	private final static Logger logger = LoggerFactory.getLogger (RestHandler.class);
 	private final UrlRouter<ControllerFunction> router;
 	private final Gson gson;
+
+	public RestHandler (UrlRouter<ControllerFunction> router, FilterCollection<HttpRequest, RestObject> filters, Gson gson) {
+		this.router = router;
+		this.gson = gson;
+	}
 
 	public RestHandler (UrlRouter<ControllerFunction> router, Gson gson) {
 		this.router = router;
