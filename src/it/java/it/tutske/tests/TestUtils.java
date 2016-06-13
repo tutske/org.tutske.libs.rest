@@ -4,7 +4,7 @@ import it.tutske.Beans;
 import it.tutske.Options;
 import it.tutske.util.CommandRunner;
 import it.tutske.util.Environment;
-import org.eclipse.jetty.server.Server;
+import org.tutske.rest.Server;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -58,7 +58,7 @@ public class TestUtils {
 		@Override public void start () throws Exception {
 			Options.initialize (new String [] {"--port=" + PORT});
 			server = new Beans ().server ();
-			server.start ();
+			server.startAsync ();
 		}
 
 		@Override public void stop () throws Exception {
