@@ -7,6 +7,18 @@ import java.util.function.Function;
 
 public class RestObject extends LinkedHashMap<String, Object> {
 
+	public RestObject () {
+	}
+
+	public RestObject (String name) {
+	}
+
+	protected void tag (String tag) {
+	}
+
+	protected void attribute (String attribute, Object value) {
+	}
+
 	protected void v (String key, Object value) {
 		put (key, value);
 	}

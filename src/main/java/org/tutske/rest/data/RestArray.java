@@ -5,6 +5,24 @@ import java.util.*;
 
 public class RestArray extends LinkedList<Object> {
 
+	public RestArray () {
+	}
+
+	public RestArray (String tag) {
+	}
+
+	public RestArray (String tag, String childTag) {
+	}
+
+	protected void tag (String tagname) {
+	}
+
+	protected void childTag (String tagname) {
+	}
+
+	protected void attribute (String name, Object value) {
+	}
+
 	protected RestArray v (Object ... objects) {
 		for ( Object object : objects ) {
 			add (object);
