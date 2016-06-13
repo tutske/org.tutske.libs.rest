@@ -89,4 +89,8 @@ public class Server {
 		server.start ();
 	}
 
+	public void stop () throws Exception {
+		server.stop ();
+	}
+
 }
