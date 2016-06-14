@@ -13,24 +13,18 @@ public class HelloWorldController {
 	private final Random random = new Random ();
 
 	public RestObject get (HttpRequest request) {
-		return new RestObject () {{
+		return new RestObject ("response") {{
 			v ("method", "GET");
 			v ("greeting", "Hello World!");
 		}};
 	}
 
 	public RestObject post (HttpRequest request) throws Exception {
-		if ( random.nextFloat () < 0.5 ) {
-			throw new ResponseException ("We suffered an error that can not be recoverd");
-		}
-		return new RestObject () {{
-			v ("method", "POST");
-			v ("greeting", "Hello World!");
-		}};
+		throw new ResponseException ("We suffered an error that can not be recoverd");
 	}
 
 	public RestObject readTempFile (HttpRequest request) {
-		RestObject object = new RestObject ();
+		RestObject object = new RestObject ("response");
 
 		String filename = request.pathParams ().get ("filename");
 		String param = request.queryParams ().get ("test");
@@ -42,7 +36,7 @@ public class HelloWorldController {
 	}
 
 	public RestObject echo (HttpRequest request) {
-		RestObject object  = new RestObject () {{
+		RestObject object  = new RestObject ("response") {{
 			v ("body", list ());
 		}};
 
@@ -61,7 +55,6 @@ public class HelloWorldController {
 			throw new ResponseException ("We need an amount");
 		}
 
-		Random random = new Random ();
 		RestArray randoms = new RestArray ();
 
 		for ( int i = 0; i < amount; i++ ) {
