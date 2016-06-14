@@ -10,13 +10,11 @@ import org.junit.Test;
 public class RestObjectXMLTest {
 
 	@Test (expected = RuntimeException.class)
-	@Ignore
 	public void it_should_complain_when_the_root_object_has_no_tag () throws Exception {
 		marshall (new RestObject ());
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_empty_objects () throws Exception {
 		RestObject object = new RestObject () {{
 			tag ("response");
@@ -25,7 +23,6 @@ public class RestObjectXMLTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_empty_objects_with_constructor_tag () throws Exception {
 		RestObject object = new RestObject ("response") {{
 		}};
@@ -33,7 +30,6 @@ public class RestObjectXMLTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_simple_objects () throws Exception {
 		RestObject object = new RestObject () {{
 			tag ("response");
@@ -48,7 +44,6 @@ public class RestObjectXMLTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_objects_with_attributes () throws Exception {
 		RestObject object = new RestObject () {{
 			tag ("response");
@@ -61,7 +56,6 @@ public class RestObjectXMLTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_un_tagged_nested_objects_with_attributes () throws Exception {
 		RestObject object = new RestObject () {{
 			tag ("response");
@@ -78,7 +72,6 @@ public class RestObjectXMLTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_tagged_nested_objects_with_attributes () throws Exception {
 		RestObject object = new RestObject () {{
 			tag ("response");

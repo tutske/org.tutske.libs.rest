@@ -1,26 +1,49 @@
 package org.tutske.rest.data;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 
-public class RestArray extends LinkedList<Object> {
+public class RestArray extends LinkedList<Object> implements RestStructure {
+
+	private String tag;
+	private String childTag;
+	private final Map<String, Object> attributes = new LinkedHashMap<String, Object> ();
 
 	public RestArray () {
 	}
 
 	public RestArray (String tag) {
+		this (tag, null);
 	}
 
 	public RestArray (String tag, String childTag) {
+		this.tag = tag;
+		this.childTag = childTag;
 	}
 
 	protected void tag (String tagname) {
+		this.tag = tagname;
 	}
 
 	protected void childTag (String tagname) {
+		this.childTag = tagname;
 	}
 
 	protected void attribute (String name, Object value) {
+		attributes.put (name, value);
+	}
+
+	public String getTag () {
+		return tag;
+	}
+
+	public String getChildTag () {
+		return childTag;
+	}
+
+	public Map<String, Object> getAttributes () {
+		return attributes;
 	}
 
 	protected RestArray v (Object ... objects) {
@@ -31,7 +54,17 @@ public class RestArray extends LinkedList<Object> {
 	}
 
 	public Object asJson () {
-		return new RestArray ().merge (this);
+		if ( attributes.isEmpty () ) {
+			return new RestArray ().merge (this);
+		}
+
+		RestObject object = new RestObject ();
+		for ( Entry<String, Object> attribute : attributes.entrySet ()) {
+			object.attribute (attribute.getKey (), attribute.getValue ());
+		}
+		object.put ("items", new RestArray ().merge (this));
+
+		return object;
 	}
 
 	@Override

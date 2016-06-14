@@ -79,6 +79,13 @@ public class RestObjectTest {
 		assertThat (json, is ("{\"key\":[1,2,3]}"));
 	}
 
+	@Test (expected = RuntimeException.class)
+	public void it_should_complain_when_the_value_is_not_primitive_and_not_rest () {
+		new RestObject () {{
+			v ("key", new Object ());
+		}};
+	}
+
 	@Test
 	public void it_should_merge_two_rest_objects () {
 		RestObject target = new RestObject () {{
@@ -193,14 +200,13 @@ public class RestObjectTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_marshall_an_array_with_arrays () {
 		RestArray array = new RestArray () {{
 			attribute ("length", 1);
-			v ("John doe");
+			v ("John Doe");
 		}};
 		String json = gson.toJson (array.asJson ());
-		assertThat (json, is ("{\"$attributes\": {\"length\": 1}, \"items\": [\"John Doe\"]}" ));
+		assertThat (json, is ("{\"$attributes\":{\"length\":1},\"items\":[\"John Doe\"]}" ));
 	}
 
 }

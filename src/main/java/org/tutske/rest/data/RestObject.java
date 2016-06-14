@@ -5,18 +5,38 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
-public class RestObject extends LinkedHashMap<String, Object> {
+public class RestObject extends LinkedHashMap<String, Object> implements RestStructure {
+
+	private String tag;
 
 	public RestObject () {
+		this (null);
 	}
 
 	public RestObject (String name) {
+		this.tag = name;
 	}
 
 	protected void tag (String tag) {
+		this.tag = tag;
+	}
+
+	public String getTag () {
+		return tag;
 	}
 
 	protected void attribute (String attribute, Object value) {
+		if ( ! containsKey ("$attributes") ) {
+			put ("$attributes", new RestObject ());
+		}
+		((RestObject) get ("$attributes")).put (attribute, value);
+	}
+
+	public Map<String, Object> getAttributes () {
+		if ( ! containsKey ("$attributes") ) {
+			return Collections.emptyMap ();
+		}
+		return (Map<String, Object>) get ("$attributes");
 	}
 
 	protected void v (String key, Object value) {

@@ -9,9 +9,17 @@ public class RestUtil {
 	}
 
 	public static boolean isValid (Object object) {
-		return (object instanceof RestArray) || (object instanceof RestObject) ||
-			(object instanceof Boolean) || (object instanceof Number) ||
-			(object instanceof String);
+		return (object instanceof RestStructure) || isPrimitive (object);
+	}
+
+	public static void assurePrimitive (Object object) {
+		if ( ! isPrimitive (object) ) {
+			throw new RuntimeException ("Not a primitive value: " + object);
+		}
+	}
+
+	public static boolean isPrimitive (Object object) {
+		return (object instanceof Boolean) || (object instanceof Number) || (object instanceof String);
 	}
 
 }

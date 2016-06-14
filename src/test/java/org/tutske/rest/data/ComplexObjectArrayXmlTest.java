@@ -10,7 +10,6 @@ import org.junit.Test;
 public class ComplexObjectArrayXmlTest {
 
 	@Test
-	@Ignore
 	public void it_should_honor_child_tag_on_nested_array () throws Exception {
 		RestObject object = new RestObject ("response") {{
 			v ("names", new RestArray (".", "name") {{

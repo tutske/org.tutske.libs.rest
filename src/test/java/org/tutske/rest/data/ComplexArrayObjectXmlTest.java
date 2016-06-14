@@ -10,7 +10,6 @@ import org.junit.Test;
 public class ComplexArrayObjectXmlTest {
 
 	@Test
-	@Ignore
 	public void it_should_serialize_an_array_of_un_tagged_objects () throws Exception {
 		RestArray array = new RestArray ("users", "user") {{
 			v (new RestObject () {{
@@ -37,17 +36,16 @@ public class ComplexArrayObjectXmlTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_serialize_an_array_of_tagged_objects_with_childtag_configured () throws Exception {
 		RestArray array = new RestArray () {{
 			tag ("users");
 			childTag ("user");
 			v (new RestObject () {{
-				childTag ("person");
+				tag ("person");
 				v ("name", "Jhon Doe");
 				v ("age", 24);
 			}}, new RestObject () {{
-				childTag ("person");
+				tag ("person");
 				v ("name", "Jane Doe");
 				v ("age", 24);
 			}});
@@ -72,7 +70,6 @@ public class ComplexArrayObjectXmlTest {
 	}
 
 	@Test
-	@Ignore
 	public void it_should_serialize_an_array_of_un_tagged_objects_when_no_child_tag_given () throws Exception {
 		RestArray array = new RestArray () {{
 			tag ("users");
@@ -96,13 +93,13 @@ public class ComplexArrayObjectXmlTest {
 	}
 
 	@Test (expected = RuntimeException.class)
-	@Ignore
 	public void it_should_complain_when_an_object_has_attributes_but_no_name () throws Exception {
-		new RestArray ("users") {{
+		RestArray array = new RestArray ("users") {{
 			v (new RestObject () {{
 				attribute ("name", "John Doe");
 			}});
 		}};
+		marshall (array);
 	}
 
 }
