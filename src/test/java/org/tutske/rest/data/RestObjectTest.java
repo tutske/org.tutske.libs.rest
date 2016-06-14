@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -189,6 +190,17 @@ public class RestObjectTest {
 		}};
 
 		assertThat (subject.getString ("first", "second"), is ("value"));
+	}
+
+	@Test
+	@Ignore
+	public void it_should_marshall_an_array_with_arrays () {
+		RestArray array = new RestArray () {{
+			attribute ("length", 1);
+			v ("John doe");
+		}};
+		String json = gson.toJson (array.asJson ());
+		assertThat (json, is ("{\"$attributes\": {\"length\": 1}, \"items\": [\"John Doe\"]}" ));
 	}
 
 }

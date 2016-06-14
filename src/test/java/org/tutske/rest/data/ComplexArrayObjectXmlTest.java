@@ -95,4 +95,14 @@ public class ComplexArrayObjectXmlTest {
 		));
 	}
 
+	@Test (expected = RuntimeException.class)
+	@Ignore
+	public void it_should_complain_when_an_object_has_attributes_but_no_name () throws Exception {
+		new RestArray ("users") {{
+			v (new RestObject () {{
+				attribute ("name", "John Doe");
+			}});
+		}};
+	}
+
 }

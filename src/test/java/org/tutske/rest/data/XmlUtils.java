@@ -1,8 +1,8 @@
 package org.tutske.rest.data;
 
 import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import org.hamcrest.BaseMatcher;
@@ -65,14 +65,34 @@ public class XmlUtils {
 	}
 
 	@Test
-	@Ignore
-	public void it_should_match_the_xml () {
-		String xml = "<response><key>value</key></response>";
+	public void it_should_match_dense_xml () {
+		String xml = "<?xml version=\"1.0\"><response><key>value</key></response>";
 		assertThat (xml, matchesXml (""
 			, "<response>"
 			, "	<key>value</key>"
 			, "</response>"
 		));
+	}
+
+	@Test
+	public void it_should_match_pretty_printed_xml () {
+		String xml = "" +
+			"<?xml version=\"1.0\">\n" +
+			"<response>\n" +
+			"	<key>value</key>\n" +
+			"</response>\n";
+
+		assertThat (xml, matchesXml (""
+			, "<response>"
+			, "	<key>value</key>"
+			, "</response>"
+		));
+	}
+
+	@Test
+	public void it_should_not_match_wrong_xml_input () {
+		String xml = "<?xml version=\"1.0\"><cats />";
+		assertThat (xml, not (matchesXml ("<dogs />")));
 	}
 
 }

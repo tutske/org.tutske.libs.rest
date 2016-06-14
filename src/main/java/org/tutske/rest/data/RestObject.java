@@ -51,7 +51,6 @@ public class RestObject extends LinkedHashMap<String, Object> {
 		return super.putIfAbsent (key, value);
 	}
 
-
 	@Override
 	public boolean replace (String key, Object oldValue, Object newValue) {
 		RestUtil.assureValid (newValue);

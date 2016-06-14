@@ -51,6 +51,7 @@ public class RestArrayXmlTest {
 	}
 
 	@Test
+	@Ignore
 	public void it_should_serialize_shallow_arrays_with_constructor_child_tags () throws Exception {
 		RestArray array = new RestArray ("names", "name") {{
 			v ("Jhon", "jr", "Doe");
