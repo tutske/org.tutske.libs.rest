@@ -92,6 +92,26 @@ public class ComplexArrayObjectXmlTest {
 		));
 	}
 
+	@Test
+	public void it_should_serialize_an_array_with_objects_that_only_have_attributes () throws Exception {
+		RestArray array = new RestArray ("users") {{
+			v (new RestObject ("user") {{
+				attribute ("name", "Jhon Doe");
+				attribute ("age", 24);
+			}}, new RestObject ("user") {{
+				attribute ("name", "Jane Doe");
+				attribute ("age", 24);
+			}});
+		}};
+
+		assertThat (marshall (array), matchesXml (""
+			, "<users>"
+			, "	<user name=\"Jhon Doe\" age=\"24\" />"
+			, "	<user name=\"Jane Doe\" age=\"24\" />"
+			, "</users>"
+		));
+	}
+
 	@Test (expected = RuntimeException.class)
 	public void it_should_complain_when_an_object_has_attributes_but_no_name () throws Exception {
 		RestArray array = new RestArray ("users") {{

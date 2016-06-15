@@ -70,7 +70,9 @@ public class RestArrayXmlTest {
 
 		assertThat (marshall (array), matchesXml (""
 			, "<names>"
-			, "	JhonjrDoe"
+			, "	Jhon"
+			, "	jr"
+			, "	Doe"
 			, "</names>"
 		));
 	}

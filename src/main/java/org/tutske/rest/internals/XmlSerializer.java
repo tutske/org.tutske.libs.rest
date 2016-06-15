@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 public class XmlSerializer implements Serializer {
 
 	private static final Logger logger = LoggerFactory.getLogger (XmlSerializer.class);
+	private int level = 0;
 
 	@Override
 	public void serialize (RestStructure object, Writer writer) {
@@ -28,23 +29,25 @@ public class XmlSerializer implements Serializer {
 		if ( ! hasTag (structure) ) {
 			throw new RuntimeException ();
 		}
-		String result = serializeInto (structure, structure.getTag ());
-		System.out.println (result);
-		return result;
+		level = 0;
+		return // "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+			serializeInto (structure, structure.getTag ());
 	}
 
 	private String serializeInto (RestStructure structure, String tagname) {
-		String result = "<" + tagname;
+		String result = indent () + "<" + tagname;
 		for ( Entry<String, Object> attribute : structure.getAttributes ().entrySet () ) {
 			result += " " + attribute.getKey () + "=\"" + attribute.getValue () + "\"";
 		}
 
+		level++;
 		String internal = serializeInternal (structure);
+		level--;
 
 		if ( internal.isEmpty () ) {
-			return result + " />";
+			return result + " />\n";
 		} else {
-			return  result + ">" + internal + "</" + tagname + ">";
+			return  result + ">\n" + internal + indent () + "</" + tagname + ">\n";
 		}
 	}
 
@@ -72,17 +75,19 @@ public class XmlSerializer implements Serializer {
 					}
 					result += serializeInternal (r);
 				} else if ( hasChildTag (array) && hasTag (r) ) {
-					result += start;
+					result += indent () + start + "\n";
+					level++;
 					result += serialize (r);
-					result += end;
+					level--;
+					result += indent () + end + "\n";
 				} else if ( hasChildTag (array) ) {
 					result += serializeInto (r, array.getChildTag ());
 				} else {
 					result += serialize (r);
 				}
 			} else {
-				result += start;
-				result += object;
+				result += indent () + start;
+				result += serializePrimitive (object);
 				result += end;
 			}
 		}
@@ -99,23 +104,25 @@ public class XmlSerializer implements Serializer {
 			if ( value instanceof RestStructure ) {
 				RestStructure r = (RestStructure) value;
 				if ( hasTag (r) ) {
-					result += "<" + entry.getKey () + ">";
+					result += indent () + "<" + entry.getKey () + ">\n";
+					level++;
 					result += serialize (r);
-					result += "</" + entry.getKey () + ">";
+					level--;
+					result += indent () + "</" + entry.getKey () + ">\n";
 				} else {
 					result += serializeInto (r, entry.getKey ());
 				}
 			} else {
-				result += "<" + entry.getKey () + ">";
-				result += value;
-				result += "</" + entry.getKey () + ">";
+				result += indent () + "<" + entry.getKey () + ">";
+				result += serializePrimitive (value);
+				result += "</" + entry.getKey () + ">" + "\n";
 			}
 		}
 		return result;
 	}
 
 	private String serializePrimitive (Object primitive) {
-		return "" + primitive;
+		return primitive.toString ();
 	}
 
 	private boolean hasTag (RestStructure structure) {
@@ -126,4 +133,11 @@ public class XmlSerializer implements Serializer {
 		return array.getChildTag () != null && ! array.getChildTag ().equals (".");
 	}
 
+	private String indent () {
+		String tabs = "";
+		for (int i = 0; i < level; i++ ) {
+			tabs += "\t";
+		}
+		return tabs;
+	}
 }
