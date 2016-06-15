@@ -6,9 +6,7 @@ import it.tutske.util.CommandRunner;
 import it.tutske.util.Environment;
 import org.tutske.rest.Server;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 
 
 public class TestUtils {
@@ -17,8 +15,8 @@ public class TestUtils {
 	private static final boolean reInitialize = false;
 	private static Application application;
 
-	public static URL getUrl (String path) throws MalformedURLException {
-		return new URL ("http", "localhost", PORT, path);
+	public static URI getUrl (String path) throws Exception {
+		return new URI ("http", "", "localhost", PORT, path, "", "");
 	}
 
 	public static URI getSocketUri (String path) throws Exception {
