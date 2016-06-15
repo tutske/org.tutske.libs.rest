@@ -26,6 +26,7 @@ public class RestObject extends LinkedHashMap<String, Object> implements RestStr
 	}
 
 	protected void attribute (String attribute, Object value) {
+		RestUtil.assurePrimitive (value);
 		if ( ! containsKey ("$attributes") ) {
 			put ("$attributes", new RestObject ());
 		}

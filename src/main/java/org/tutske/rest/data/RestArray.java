@@ -31,6 +31,7 @@ public class RestArray extends LinkedList<Object> implements RestStructure {
 	}
 
 	protected void attribute (String name, Object value) {
+		RestUtil.assurePrimitive (value);
 		attributes.put (name, value);
 	}
 

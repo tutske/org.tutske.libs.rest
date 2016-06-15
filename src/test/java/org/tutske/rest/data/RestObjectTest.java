@@ -209,4 +209,18 @@ public class RestObjectTest {
 		assertThat (json, is ("{\"$attributes\":{\"length\":1},\"items\":[\"John Doe\"]}" ));
 	}
 
+	@Test (expected = RuntimeException.class)
+	public void it_should_complain_when_an_attribute_on_array_is_not_primitive () {
+		new RestArray () {{
+			attribute ("length", new RestObject ());
+		}};
+	}
+
+	@Test (expected = RuntimeException.class)
+	public void it_should_complain_when_an_attribute_on_object_is_not_primitive () {
+		new RestObject () {{
+			attribute ("max", new RestArray ());
+		}};
+	}
+
 }
