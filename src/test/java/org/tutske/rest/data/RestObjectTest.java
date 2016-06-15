@@ -109,6 +109,34 @@ public class RestObjectTest {
 	}
 
 	@Test
+	public void it_should_merge_objects_in_deep_arrays () {
+		RestArray target = new RestArray () {{
+		}};
+		RestArray source = new RestArray () {{
+			v (new RestObject () {{
+				v ("key", "value");
+			}});
+		}};
+
+		String json = gson.toJson (target.merge (source).asJson ());
+		assertThat (json, is ("[{\"key\":\"value\"}]"));
+	}
+
+	@Test
+	public void it_should_merge_deep_arrays () {
+		RestArray target = new RestArray () {{
+		}};
+		RestArray source = new RestArray () {{
+			v (new RestArray () {{
+				v ("first");
+			}});
+		}};
+
+		String json = gson.toJson (target.merge (source).asJson ());
+		assertThat (json, is ("[[\"first\"]]"));
+	}
+
+	@Test
 	public void it_should_merge_lists () {
 		RestObject target = new RestObject () {{
 			v ("list", list (1, 2));

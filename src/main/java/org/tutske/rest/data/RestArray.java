@@ -80,9 +80,9 @@ public class RestArray extends LinkedList<Object> {
 	public RestArray merge (RestArray source) {
 		for ( Object object : source ) {
 			if ( object instanceof RestObject ) {
-				RestObject created = new RestObject ().merge ((RestObject) object);
+				this.add (new RestObject ().merge ((RestObject) object));
 			} else if ( object instanceof RestArray ) {
-				RestArray created = new RestArray ().merge ((RestArray) object);
+				this.add (new RestArray ().merge ((RestArray) object));
 			} else {
 				add (object);
 			}
