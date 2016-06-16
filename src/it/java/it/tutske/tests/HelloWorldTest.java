@@ -87,7 +87,11 @@ public class HelloWorldTest {
 	@Test
 	public void it_should_not_accept_delete_requests () throws Exception {
 		URI uri = TestUtils.getUrl ("/hello");
-		client.newRequest (uri).method (HttpMethod.DELETE).send ().getContentAsString ();
+		String content = client.newRequest (uri).method (HttpMethod.DELETE).send ().getContentAsString ();
+
+		System.out.println (content);
+
+		assertThat (content, containsString ("Not Found"));
 	}
 
 	@Test
