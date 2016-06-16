@@ -50,7 +50,8 @@ public class RestObject extends LinkedHashMap<String, Object> implements RestStr
 		return arr;
 	}
 
-	public Object asJson () {
+	@Override
+	public RestStructure asRestStructure () {
 		return new RestObject ().merge (this);
 	}
 

@@ -7,18 +7,18 @@ import org.tutske.rest.data.RestStructure;
 import java.io.Writer;
 
 
-public class JsonSerailizer implements Serializer {
+public class JsonSerializer implements Serializer {
 
 	private final Gson gson = new GsonBuilder ().setPrettyPrinting ().create ();
 
 	@Override
 	public String serialize (RestStructure structure) {
-		return gson.toJson (structure.asJson ());
+		return gson.toJson (structure.asRestStructure ());
 	}
 
 	@Override
 	public void serialize (RestStructure structure, Writer writer) {
-		gson.toJson (structure.asJson (), writer);
+		gson.toJson (structure.asRestStructure (), writer);
 	}
 
 }

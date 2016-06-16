@@ -1,6 +1,7 @@
 package org.tutske.rest.exceptions;
 
 import org.tutske.rest.data.RestObject;
+import org.tutske.rest.data.RestStructure;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,13 +49,13 @@ public class ResponseException extends RuntimeException {
 		this.data.merge (extra);
 	}
 
-	public Object asJson () {
-		return new RestObject () {{
+	public RestStructure asRestStructure () {
+		return new RestObject ("error") {{
 			v ("type", baseUrl + type);
 			v ("title", title);
 			v ("status", status);
 			v ("detail", getMessage ());
-		}}.merge (this.data).asJson ();
+		}}.merge (this.data);
 	}
 
 }

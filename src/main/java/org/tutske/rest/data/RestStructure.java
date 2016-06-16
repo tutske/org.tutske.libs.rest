@@ -7,5 +7,6 @@ public interface RestStructure {
 
 	public String getTag ();
 	public Map<String, Object> getAttributes ();
+	public RestStructure asRestStructure ();
 
 }

@@ -3,8 +3,8 @@ package org.tutske.rest.data;
 import static org.junit.Assert.assertThat;
 import static org.tutske.rest.data.XmlUtils.*;
 
-import com.google.gson.GsonBuilder;
 import org.junit.Test;
+import org.tutske.rest.internals.JsonSerializer;
 
 
 public class ComplexXmlTest {
@@ -43,7 +43,8 @@ public class ComplexXmlTest {
 			}});
 		}};
 
-		System.out.println (new GsonBuilder ().setPrettyPrinting ().create ().toJson (((RestObject)structure).asJson ()));
+		System.out.println (new JsonSerializer ().serialize (structure));
+		System.out.println (marshall (structure));
 
 		assertThat (marshall (structure), matchesXml (""
 			, "<response processTime=\"123ms\" cachable=\"true\">"

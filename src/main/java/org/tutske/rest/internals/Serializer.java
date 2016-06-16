@@ -7,7 +7,7 @@ import java.io.Writer;
 
 public interface Serializer {
 
-	public String serialize (RestStructure object);
-	public void serialize (RestStructure object, Writer writer);
+	public String serialize (RestStructure structure);
+	public void serialize (RestStructure structure, Writer writer);
 
 }

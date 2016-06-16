@@ -54,7 +54,8 @@ public class RestArray extends LinkedList<Object> implements RestStructure {
 		return this;
 	}
 
-	public Object asJson () {
+	@Override
+	public RestStructure asRestStructure () {
 		if ( attributes.isEmpty () ) {
 			return new RestArray ().merge (this);
 		}

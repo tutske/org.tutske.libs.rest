@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -19,7 +18,7 @@ public class RestObjectTest {
 			v ("key", "value");
 		}};
 
-		String json = gson.toJson (object.asJson ());
+		String json = gson.toJson (object.asRestStructure ());
 		assertThat (json, is ("{\"key\":\"value\"}"));
 	}
 
@@ -32,7 +31,7 @@ public class RestObjectTest {
 			v ("three", 3.0D);
 		}};
 
-		String json = gson.toJson (object.asJson ());
+		String json = gson.toJson (object.asRestStructure ());
 		assertThat (json, is ("{\"zero\":0,\"one\":1,\"two\":2.0,\"three\":3.0}"));
 	}
 
@@ -43,7 +42,7 @@ public class RestObjectTest {
 			v ("faulty", false);
 		}};
 
-		String json = gson.toJson (object.asJson ());
+		String json = gson.toJson (object.asRestStructure ());
 		assertThat (json, is ("{\"success\":true,\"faulty\":false}"));
 	}
 
@@ -55,7 +54,7 @@ public class RestObjectTest {
 			}});
 		}};
 
-		String json = gson.toJson (object.asJson ());
+		String json = gson.toJson (object.asRestStructure ());
 		assertThat (json, is ("{\"shallow\":{\"deep\":\"value\"}}"));
 	}
 
@@ -65,7 +64,7 @@ public class RestObjectTest {
 			v ("key", list ());
 		}};
 
-		String json = gson.toJson (object.asJson ());
+		String json = gson.toJson (object.asRestStructure ());
 		assertThat (json, is ("{\"key\":[]}"));
 	}
 
@@ -75,7 +74,7 @@ public class RestObjectTest {
 			v ("key", list (1, 2, 3));
 		}};
 
-		String json = gson.toJson (object.asJson ());
+		String json = gson.toJson (object.asRestStructure ());
 		assertThat (json, is ("{\"key\":[1,2,3]}"));
 	}
 
@@ -95,7 +94,7 @@ public class RestObjectTest {
 			v ("second", 2);
 		}};
 
-		String json = gson.toJson (target.merge (source).asJson ());
+		String json = gson.toJson (target.merge (source).asRestStructure ());
 		assertThat (json, is ("{\"first\":1,\"second\":2}"));
 	}
 
@@ -112,7 +111,7 @@ public class RestObjectTest {
 			}});
 		}};
 
-		String json = gson.toJson (target.merge (source).asJson ());
+		String json = gson.toJson (target.merge (source).asRestStructure ());
 		assertThat (json, is ("{\"object\":{\"first\":1,\"second\":2}}"));
 	}
 
@@ -125,7 +124,7 @@ public class RestObjectTest {
 			v ("key", "new value");
 		}};
 
-		String json = gson.toJson (target.merge (source).asJson ());
+		String json = gson.toJson (target.merge (source).asRestStructure ());
 		assertThat (json, is ("{\"key\":\"new value\"}"));
 	}
 
@@ -139,7 +138,7 @@ public class RestObjectTest {
 			}});
 		}};
 
-		String json = gson.toJson (target.merge (source).asJson ());
+		String json = gson.toJson (target.merge (source).asRestStructure ());
 		assertThat (json, is ("[{\"key\":\"value\"}]"));
 	}
 
@@ -153,7 +152,7 @@ public class RestObjectTest {
 			}});
 		}};
 
-		String json = gson.toJson (target.merge (source).asJson ());
+		String json = gson.toJson (target.merge (source).asRestStructure ());
 		assertThat (json, is ("[[\"first\"]]"));
 	}
 
@@ -166,7 +165,7 @@ public class RestObjectTest {
 			v ("list", list (3, 4));
 		}};
 
-		String json = gson.toJson (target.merge (source).asJson ());
+		String json = gson.toJson (target.merge (source).asRestStructure ());
 		assertThat (json, is ("{\"list\":[1,2,3,4]}"));
 	}
 
@@ -183,11 +182,11 @@ public class RestObjectTest {
 		}};
 
 		assertThat (
-			gson.toJson (first_second.asJson ()),
+			gson.toJson (first_second.asRestStructure ()),
 			is ("{\"first\":1,\"second\":2}")
 		);
 		assertThat (
-			gson.toJson (second_first.asJson ()),
+			gson.toJson (second_first.asRestStructure ()),
 			is ("{\"second\":2,\"first\":1}")
 		);
 	}
@@ -218,7 +217,7 @@ public class RestObjectTest {
 			attribute ("length", 1);
 			v ("John Doe");
 		}};
-		String json = gson.toJson (array.asJson ());
+		String json = gson.toJson (array.asRestStructure ());
 		assertThat (json, is ("{\"$attributes\":{\"length\":1},\"items\":[\"John Doe\"]}" ));
 	}
 

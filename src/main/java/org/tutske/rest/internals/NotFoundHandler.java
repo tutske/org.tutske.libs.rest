@@ -30,7 +30,7 @@ public class NotFoundHandler extends AbstractHandler {
 			v ("method", request.getMethod ());
 		}});
 
-		gson.toJson (exception.asJson (), response.getWriter ());
+		gson.toJson (exception.asRestStructure (), response.getWriter ());
 		base.setHandled (true);
 	}
 
