@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.MetaData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,32 @@ public class HelloWorldTest {
 		String content = client.GET (uri).getContentAsString ();
 		System.out.println (content);
 		assertThat (content, containsString ("filename.txt"));
+	}
+
+	@Test
+	public void it_should_return_xml_when_asked () throws Exception {
+		URI uri = TestUtils.getUrl ("/hello");
+		String content = client.newRequest (uri)
+			.method (HttpMethod.GET)
+			.header ("Accept", "application/xml")
+			.send ().getContentAsString ();
+
+		System.out.println (content);
+
+		assertThat (content, containsString ("<?xml "));
+	}
+
+	@Test
+	public void it_should_return_xml_when_failing_on_the_server () throws Exception {
+		URI uri = TestUtils.getUrl ("/hello");
+		String content = client.newRequest (uri)
+			.method (HttpMethod.POST)
+			.header ("Accept", "application/xml")
+			.send ().getContentAsString ();
+
+		System.out.println (content);
+
+		assertThat (content, containsString ("<?xml "));
 	}
 
 	@Test

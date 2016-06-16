@@ -61,7 +61,7 @@ public class HelloWorldController {
 			randoms.add (random.nextFloat ());
 		}
 
-		return new RestObject () {{
+		return new RestObject ("response") {{
 			v ("randoms", randoms);
 		}};
 	}
