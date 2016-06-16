@@ -2,13 +2,11 @@ package org.tutske.rest.internals;
 
 import static org.tutske.rest.HttpRequest.Method;
 
-import com.google.gson.Gson;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
-import org.tutske.rest.data.RestObject;
 import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.ResponseException;
 
@@ -23,21 +21,30 @@ import java.util.Map;
 public class RestHandler extends AbstractHandler {
 
 	private final static Logger logger = LoggerFactory.getLogger (RestHandler.class);
+
 	private final UrlRouter<ControllerFunction> router;
-	private final Map<String, Serializer> serializers = new HashMap<String, Serializer> ();
+	private final FilterCollection<HttpRequest, RestStructure> filters;
+	private final Map<String, Serializer> serializers;
 
-	{
-		serializers.put ("application/json", new JsonSerializer ());
-		serializers.put ("application/xml", new XmlSerializer ());
-		serializers.put ("default", serializers.get ("application/json"));
+	public RestHandler (UrlRouter<ControllerFunction> router,
+		FilterCollection<HttpRequest, RestStructure> filters,
+		Map<String, Serializer> serializers
+	) {
+		this.router = router;
+		this.filters = filters;
+		this.serializers = serializers;
 	}
 
-	public RestHandler (UrlRouter<ControllerFunction> router, FilterCollection<HttpRequest, RestObject> filters, Gson gson) {
-		this.router = router;
+	public RestHandler (UrlRouter<ControllerFunction> router, Map<String, Serializer> serializers) {
+		this (router, new FilterCollection<> (), serializers);
 	}
 
-	public RestHandler (UrlRouter<ControllerFunction> router, Gson gson) {
-		this.router = router;
+	public RestHandler (UrlRouter<ControllerFunction> router) {
+		this (router, new HashMap<String, Serializer> () {{
+			put ("application/json", new JsonSerializer ());
+			put ("application/xml", new XmlSerializer ());
+			put ("default", get ("application/json"));
+		}});
 	}
 
 	@Override
@@ -68,11 +75,12 @@ public class RestHandler extends AbstractHandler {
 
 		String accept = request.getHeader ("Accept");
 		String type = serializers.containsKey (accept) ? accept : "application/json";
+		Serializer serializer = serializers.get (serializers.containsKey (accept) ? accept : "default");
 
 		response.setContentType (type);
 		response.setStatus (status);
 
-		serializers.get (type).serialize ((RestStructure) result, response.getWriter ());
+		serializer.serialize ((RestStructure) result, response.getWriter ());
 		response.getWriter ().flush ();
 
 		base.setHandled (true);

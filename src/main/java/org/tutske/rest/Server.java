@@ -5,12 +5,12 @@ import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.tutske.rest.data.RestObject;
+import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.ResponseException;
-import org.tutske.rest.internals.FilterCollection;
-import org.tutske.rest.internals.NotFoundHandler;
-import org.tutske.rest.internals.RestHandler;
-import org.tutske.rest.internals.SocketHandler;
+import org.tutske.rest.internals.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Server {
@@ -25,7 +25,8 @@ public class Server {
 	private Handler sockets = null;
 
 	private UrlRouter<ControllerFunction> router = null;
-	private FilterCollection<HttpRequest, RestObject>  filters = null;
+	private FilterCollection<HttpRequest, RestStructure>  filters = null;
+	private Map<String, Serializer> serializers = null;
 
 	public Server (String baseurl) {
 		this (baseurl, DEFAULT_PORT);
@@ -46,8 +47,13 @@ public class Server {
 		return this;
 	}
 
-	public Server configureFilters (FilterCollection<HttpRequest, RestObject> filters) {
+	public Server configureFilters (FilterCollection<HttpRequest, RestStructure> filters) {
 		this.filters = filters;
+		return this;
+	}
+
+	public Server configureSerializers (Map<String, Serializer> serializers) {
+		this.serializers = serializers;
 		return this;
 	}
 
@@ -70,15 +76,19 @@ public class Server {
 	public void startAsync () throws Exception {
 		ResponseException.configureBaseUrl (baseurl);
 
+		if ( serializers == null ) {
+			serializers = defaultSerializers ();
+		}
+
 		HandlerList handlers = new HandlerList ();
 		if ( resources != null ) {
 			handlers.addHandler (resources);
 		}
 		if ( router != null && filters != null ) {
-			handlers.addHandler (new RestHandler (router, filters, gson));
+			handlers.addHandler (new RestHandler (router, filters, serializers));
 		}
 		if ( router != null && filters == null ) {
-			handlers.addHandler (new RestHandler (router, gson));
+			handlers.addHandler (new RestHandler (router, serializers));
 		}
 		if ( sockets != null ) {
 			handlers.addHandler (sockets);
@@ -91,6 +101,16 @@ public class Server {
 
 	public void stop () throws Exception {
 		server.stop ();
+	}
+
+	private Map<String, Serializer> defaultSerializers () {
+		Map<String, Serializer> serializers = new HashMap<> ();
+
+		serializers.put ("application/json", new JsonSerializer ());
+		serializers.put ("application/xml", new XmlSerializer ());
+		serializers.put ("default", serializers.get ("application/json"));
+
+		return serializers;
 	}
 
 }

@@ -22,11 +22,11 @@ import org.tutske.rest.exceptions.ResponseException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.HashMap;
 
 
 public class RestHandlerTest {
 
-	private static final Gson gson = new GsonBuilder ().create ();
 	private static final UrlRouter<ControllerFunction> router = new UrlRouter<ControllerFunction> ().add (
 		new ControllerRoute ("dummy", "/dummy", RestHandlerTest::dummy),
 		new ControllerRoute ("fail", "/fail", RestHandlerTest::fail),
@@ -80,50 +80,54 @@ public class RestHandlerTest {
 
 	@Test
 	public void it_should_return_a_success_200_ok_code_for_normal_actions () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router);
 		get ("/dummy");
 		verify (response).setStatus (200);
 	}
 
 	@Test
 	public void it_should_give_gson_output_as_specified_in_the_response () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router, new HashMap<String, Serializer> () {{
+			put ("default", new JsonSerializer ());
+		}});
+
 		get ("/dummy");
+
 		assertThat (output (), containsString ("greeting"));
 		assertThat (output (), containsString ("Hello World"));
 	}
 
 	@Test
 	public void it_should_do_nothing_when_the_url_is_not_routed () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router);
 		get ("/unknown/path/to/resources");
 		verify (response, never ()).setStatus (anyInt ());
 	}
 
 	@Test
 	public void it_should_return_an_error_code_when_a_response_exception_is_thrown () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router);
 		get ("/fail");
 		verify (response).setStatus (codeRange (400));
 	}
 
 	@Test
 	public void it_should_return_an_error_code_when_a_different_exception_is_thrown () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router);
 		get ("/hard-fail");
 		verify (response).setStatus (codeRange (500));
 	}
 
 	@Test
 	public void it_should_proceed_as_normal_when_not_having_any_filters () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router);
 		get ("/dummy");
 		verify (response).setStatus (200);
 	}
 
 	@Test
 	public void it_should_apply_a_filter_that_matches () throws Exception {
-		handler = new RestHandler (router, gson);
+		handler = new RestHandler (router);
 		get ("/dummy");
 	}
 
