@@ -140,12 +140,12 @@ public class RestObject extends LinkedHashMap<String, Object> implements RestStr
 				throw new RuntimeException ("Could not merge objects");
 			}
 
-			if ( targetValue == null ) {
-				targetValue = sourceValue;
-			} else if ( sourceValue instanceof RestObject ) {
+			if ( sourceValue instanceof RestObject ) {
 				((RestObject) targetValue).merge ((RestObject) sourceValue);
 			} else if ( sourceValue instanceof RestArray ) {
 				((RestArray) targetValue).merge ((RestArray) sourceValue);
+			} else {
+				targetValue = sourceValue;
 			}
 
 			super.put (key, targetValue);

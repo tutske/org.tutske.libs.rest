@@ -117,6 +117,19 @@ public class RestObjectTest {
 	}
 
 	@Test
+	public void it_should_overwrite_existing_properties_when_merging_objects () {
+		RestObject target = new RestObject () {{
+			v ("key", "value");
+		}};
+		RestObject source = new RestObject () {{
+			v ("key", "new value");
+		}};
+
+		String json = gson.toJson (target.merge (source).asJson ());
+		assertThat (json, is ("{\"key\":\"new value\"}"));
+	}
+
+	@Test
 	public void it_should_merge_objects_in_deep_arrays () {
 		RestArray target = new RestArray () {{
 		}};
@@ -277,6 +290,40 @@ public class RestObjectTest {
 		target.merge (source);
 
 		assertThat (target.getChildTag (), is ("modifiedChildTag"));
+	}
+
+	@Test
+	public void it_should_merge_attributes_on_objects () {
+		RestObject target = new RestObject () {{
+			attribute ("key", "value");
+		}};
+		RestObject source = new RestObject () {{
+			attribute ("key", "new value");
+			attribute ("second", "second value");
+		}};
+
+		target.merge (source);
+
+		assertThat (target.getAttributes (), hasEntry ("key", "new value"));
+		assertThat (target.getAttributes (), hasEntry ("second", "second value"));
+		assertThat (target.getAttributes ().entrySet (), hasSize (2));
+	}
+
+	@Test
+	public void it_should_merge_attributes_on_arrays () {
+		RestArray target = new RestArray () {{
+			attribute ("key", "value");
+		}};
+		RestArray source = new RestArray () {{
+			attribute ("key", "new value");
+			attribute ("second", "second value");
+		}};
+
+		target.merge (source);
+
+		assertThat (target.getAttributes (), hasEntry ("key", "new value"));
+		assertThat (target.getAttributes (), hasEntry ("second", "second value"));
+		assertThat (target.getAttributes ().entrySet (), hasSize (2));
 	}
 
 	@Test (expected = RuntimeException.class)
