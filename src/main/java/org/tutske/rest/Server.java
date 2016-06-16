@@ -1,7 +1,5 @@
 package org.tutske.rest;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -19,7 +17,6 @@ public class Server {
 
 	private final org.eclipse.jetty.server.Server server;
 	private final String baseurl;
-	private final Gson gson = new GsonBuilder ().create ();
 
 	private Handler resources = null;
 	private Handler sockets = null;
@@ -27,6 +24,7 @@ public class Server {
 	private UrlRouter<ControllerFunction> router = null;
 	private FilterCollection<HttpRequest, RestStructure>  filters = null;
 	private Map<String, Serializer> serializers = null;
+	private String defaultSerializer = null;
 
 	public Server (String baseurl) {
 		this (baseurl, DEFAULT_PORT);
@@ -52,7 +50,8 @@ public class Server {
 		return this;
 	}
 
-	public Server configureSerializers (Map<String, Serializer> serializers) {
+	public Server configureSerializers (String defaultSerializer, Map<String, Serializer> serializers) {
+		this.defaultSerializer = defaultSerializer;
 		this.serializers = serializers;
 		return this;
 	}
@@ -79,16 +78,20 @@ public class Server {
 		if ( serializers == null ) {
 			serializers = defaultSerializers ();
 		}
+		if ( defaultSerializer == null ) {
+			defaultSerializer = "application/json";
+		}
+		ContentSerializer serializer = new ContentSerializer (defaultSerializer, serializers);
 
 		HandlerList handlers = new HandlerList ();
 		if ( resources != null ) {
 			handlers.addHandler (resources);
 		}
 		if ( router != null && filters != null ) {
-			handlers.addHandler (new RestHandler (router, filters, serializers));
+			handlers.addHandler (new RestHandler (router, filters, serializer));
 		}
 		if ( router != null && filters == null ) {
-			handlers.addHandler (new RestHandler (router, serializers));
+			handlers.addHandler (new RestHandler (router, serializer));
 		}
 		if ( sockets != null ) {
 			handlers.addHandler (sockets);

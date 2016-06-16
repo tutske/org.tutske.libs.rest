@@ -14,8 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class RestHandler extends AbstractHandler {
@@ -24,26 +22,25 @@ public class RestHandler extends AbstractHandler {
 
 	private final UrlRouter<ControllerFunction> router;
 	private final FilterCollection<HttpRequest, RestStructure> filters;
-	private final Map<String, Serializer> serializers;
+	private final ContentSerializer serializer;
 
 	public RestHandler (UrlRouter<ControllerFunction> router,
 		FilterCollection<HttpRequest, RestStructure> filters,
-		Map<String, Serializer> serializers
+		ContentSerializer serializer
 	) {
 		this.router = router;
 		this.filters = filters;
-		this.serializers = serializers;
+		this.serializer = serializer;
 	}
 
-	public RestHandler (UrlRouter<ControllerFunction> router, Map<String, Serializer> serializers) {
-		this (router, new FilterCollection<> (), serializers);
+	public RestHandler (UrlRouter<ControllerFunction> router, ContentSerializer serializer) {
+		this (router, new FilterCollection<> (), serializer);
 	}
 
 	public RestHandler (UrlRouter<ControllerFunction> router) {
-		this (router, new HashMap<String, Serializer> () {{
+		this (router, new ContentSerializer ("application/json") {{
 			put ("application/json", new JsonSerializer ());
 			put ("application/xml", new XmlSerializer ());
-			put ("default", get ("application/json"));
 		}});
 	}
 
@@ -58,7 +55,7 @@ public class RestHandler extends AbstractHandler {
 		}
 
 		int status = HttpServletResponse.SC_OK;
-		Object result;
+		RestStructure result;
 		try {
 			ParameterBag data = route.extractMatches (s, s.substring (1).split ("/"));
 			HttpRequest r = new HttpRequest (request, response, data);
@@ -74,13 +71,11 @@ public class RestHandler extends AbstractHandler {
 		}
 
 		String accept = request.getHeader ("Accept");
-		String type = serializers.containsKey (accept) ? accept : "application/json";
-		Serializer serializer = serializers.get (serializers.containsKey (accept) ? accept : "default");
+		String contentType = serializer.contentType (accept);
 
-		response.setContentType (type);
+		response.setContentType (contentType);
 		response.setStatus (status);
-
-		serializer.serialize ((RestStructure) result, response.getWriter ());
+		serializer.serialize (accept, result, response.getWriter ());
 		response.getWriter ().flush ();
 
 		base.setHandled (true);

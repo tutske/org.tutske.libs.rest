@@ -3,22 +3,31 @@ package org.tutske.rest.internals;
 import org.tutske.rest.data.RestStructure;
 
 import java.io.Writer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class ContentSerializer {
 
-	private final Map<String, Serializer> serializers;
+	private final Map<String, Serializer> serializers = new HashMap<> ();
 	private final String defaultType;
 
 	public ContentSerializer (String defaultType, Map<String, Serializer> serializers) {
-		this.serializers = serializers;
 		this.defaultType = defaultType;
+		this.serializers.putAll (serializers);
 	}
 
 	public ContentSerializer (Map<String, Serializer> serializers) {
 		this (null, serializers);
+	}
+
+	public ContentSerializer (String defaultType) {
+		this (defaultType, Collections.emptyMap ());
+	}
+
+	public ContentSerializer () {
+		this (Collections.emptyMap ());
 	}
 
 	public String contentType (String accept) {
@@ -41,6 +50,12 @@ public class ContentSerializer {
 	}
 
 	private String pickFavourite (String accept) {
+		if ( accept == null && defaultType == null ) {
+			throw new RuntimeException ("No default mime type configured");
+		} else if ( accept == null ) {
+			return defaultType;
+		}
+
 		int index = 0;
 
 		while ( index < accept.length () ) {
@@ -101,7 +116,7 @@ public class ContentSerializer {
 		return semicolon < 0 ? value.length () : semicolon;
 	}
 
-	private int nextMime (String value, int index) {
+	protected int nextMime (String value, int index) {
 		int colon = value.indexOf (",", index);
 		int quote = value.indexOf ("\"", index);
 		boolean closed = quote > -1;
@@ -115,6 +130,10 @@ public class ContentSerializer {
 		}
 
 		return colon < 0 ? value.length () : colon;
+	}
+
+	protected void put (String type, Serializer serializer) {
+		this.serializers.put (type, serializer);
 	}
 
 }

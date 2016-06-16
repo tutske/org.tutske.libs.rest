@@ -66,6 +66,18 @@ public class ContentSerializerTest {
 		assertThat (contentType, is ("application/json"));
 	}
 
+	@Test (expected = RuntimeException.class)
+	public void it_should_complain_when_no_accept_header_is_given_and_no_default_is_configured () {
+		ContentSerializer serializer = new ContentSerializer ();
+		serializer.contentType ("");
+	}
+
+	@Test (expected = RuntimeException.class)
+	public void it_should_complain_when_null_accept_header_is_given_and_no_default_is_configured () {
+		ContentSerializer serializer = new ContentSerializer ();
+		serializer.contentType (null);
+	}
+
 	@Test
 	public void it_should_pick_something_that_it_knows_how_to_handle () {
 		ContentSerializer serializer = new ContentSerializer (new HashMap<String, Serializer> () {{

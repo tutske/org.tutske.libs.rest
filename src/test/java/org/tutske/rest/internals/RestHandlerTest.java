@@ -8,8 +8,6 @@ import static org.mockito.Mockito.*;
 
 import org.eclipse.jetty.server.Request;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.tutske.rest.ControllerFunction;
@@ -22,7 +20,6 @@ import org.tutske.rest.exceptions.ResponseException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.HashMap;
 
 
 public class RestHandlerTest {
@@ -87,7 +84,7 @@ public class RestHandlerTest {
 
 	@Test
 	public void it_should_give_gson_output_as_specified_in_the_response () throws Exception {
-		handler = new RestHandler (router, new HashMap<String, Serializer> () {{
+		handler = new RestHandler (router, new ContentSerializer ("default") {{
 			put ("default", new JsonSerializer ());
 		}});
 
