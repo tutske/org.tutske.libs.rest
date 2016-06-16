@@ -93,7 +93,7 @@ public class Server {
 		if ( sockets != null ) {
 			handlers.addHandler (sockets);
 		}
-		handlers.addHandler (new NotFoundHandler (gson));
+		handlers.addHandler (new NotFoundHandler (serializers));
 
 		server.setHandler (handlers);
 		server.start ();

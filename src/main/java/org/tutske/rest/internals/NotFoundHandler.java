@@ -1,6 +1,5 @@
 package org.tutske.rest.internals;
 
-import com.google.gson.Gson;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.tutske.rest.data.RestObject;
@@ -11,14 +10,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 
 public class NotFoundHandler extends AbstractHandler {
 
-	private final Gson gson;
+	private final Map<String, Serializer> serializers;
 
-	public NotFoundHandler (Gson gson) {
-		this.gson = gson;
+	public NotFoundHandler (Map<String, Serializer> serializers) {
+		this.serializers = serializers;
 	}
 
 	@Override
@@ -30,7 +30,14 @@ public class NotFoundHandler extends AbstractHandler {
 			v ("method", request.getMethod ());
 		}});
 
-		gson.toJson (exception.asRestStructure (), response.getWriter ());
+		String accept = request.getHeader ("Accept");
+		String type = serializers.containsKey (accept) ? accept : "application/json";
+		Serializer serializer = serializers.get (serializers.containsKey (accept) ? accept : "default");
+
+		response.setStatus (exception.getStatusCode ());
+		response.setContentType (type);
+		serializer.serialize (exception.asRestStructure (), response.getWriter ());
+
 		base.setHandled (true);
 	}
 

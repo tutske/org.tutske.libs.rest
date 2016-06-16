@@ -4,6 +4,7 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.MetaData;
 import org.junit.After;
@@ -87,6 +88,32 @@ public class HelloWorldTest {
 	public void it_should_not_accept_delete_requests () throws Exception {
 		URI uri = TestUtils.getUrl ("/hello");
 		client.newRequest (uri).method (HttpMethod.DELETE).send ().getContentAsString ();
+	}
+
+	@Test
+	public void it_should_say_non_existing_url_is_not_found () throws Exception {
+		URI uri = TestUtils.getUrl ("/path_does_not_exist");
+		ContentResponse response = client.GET (uri);
+		String content = response.getContentAsString ();
+
+		System.out.println (content);
+
+		assertThat (response.getStatus (), is (404));
+		assertThat (content, containsString ("Not Found"));
+	}
+
+	@Test
+	public void it_should_say_non_existing_url_is_not_found_in_xml () throws Exception {
+		URI uri = TestUtils.getUrl ("/path_does_not_exist");
+		ContentResponse response = client.newRequest (uri)
+			.method (HttpMethod.GET)
+			.header ("Accept", "application/xml")
+			.send ();
+		String content = response.getContentAsString ();
+
+		System.out.println (content);
+
+		assertThat (content, containsString ("<?xml"));
 	}
 
 }
