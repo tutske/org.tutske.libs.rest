@@ -16,6 +16,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Map;
 import java.util.Map.Entry;
 
 
@@ -37,14 +38,14 @@ public class XmlDomSerializer implements Serializer {
 	}
 
 	@Override
-	public String serialize (RestStructure structure) {
+	public String serialize (RestStructure structure, Map<String, String> attributes) {
 		StringWriter writer = new StringWriter ();
 		serialize (structure, writer);
 		return writer.toString ().replaceAll ("/>", " />").replace ("?>", "?>\n");
 	}
 
 	@Override
-	public void serialize (RestStructure structure, Writer writer) {
+	public void serialize (RestStructure structure, Map<String, String> attributes, Writer writer) {
 		serialize (builder.newDocument (), structure, writer);
 	}
 

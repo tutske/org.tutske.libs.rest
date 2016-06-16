@@ -7,6 +7,7 @@ import org.tutske.rest.data.RestObject;
 import org.tutske.rest.data.RestStructure;
 
 import java.io.Writer;
+import java.util.Map;
 import java.util.Map.Entry;
 
 
@@ -16,7 +17,7 @@ public class XmlSerializer implements Serializer {
 	private int level = 0;
 
 	@Override
-	public void serialize (RestStructure object, Writer writer) {
+	public void serialize (RestStructure object, Map<String, String> attributes, Writer writer) {
 		try { writer.write (serialize (object)); }
 		catch (Exception exception) {
 			logger.debug ("could not write serialization to writer", exception);
@@ -25,7 +26,7 @@ public class XmlSerializer implements Serializer {
 	}
 
 	@Override
-	public String serialize (RestStructure structure) {
+	public String serialize (RestStructure structure, Map<String, String> attributes) {
 		if ( ! hasTag (structure) ) {
 			throw new RuntimeException ();
 		}
