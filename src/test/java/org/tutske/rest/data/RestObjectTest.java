@@ -200,13 +200,83 @@ public class RestObjectTest {
 	}
 
 	@Test
-	public void it_should_marshall_an_array_with_arrays () {
+	public void it_should_marshall_an_array_with_attributes () {
 		RestArray array = new RestArray () {{
 			attribute ("length", 1);
 			v ("John Doe");
 		}};
 		String json = gson.toJson (array.asJson ());
 		assertThat (json, is ("{\"$attributes\":{\"length\":1},\"items\":[\"John Doe\"]}" ));
+	}
+
+	@Test
+	public void it_should_keep_the_original_tag_name_when_merging_arrays () {
+		RestArray target = new RestArray ("users");
+		RestArray source = new RestArray ();
+
+		target.merge (source);
+
+		assertThat (target.getTag (), is ("users"));
+	}
+
+	@Test
+	public void it_should_keep_the_original_tag_name_when_merging_objects () {
+		RestObject target = new RestObject ("response");
+		RestObject source = new RestObject ();
+
+		target.merge (source);
+
+		assertThat (target.getTag (), is ("response"));
+	}
+
+	@Test
+	public void it_should_keep_the_original_child_tag_name_when_merging_arrays () {
+		RestArray target = new RestArray ("users", "user");
+		RestArray source = new RestArray ("modified");
+
+		target.merge (source);
+
+		assertThat (target.getChildTag (), is ("user"));
+	}
+
+	@Test
+	public void it_should_keep_the_original_child_tag_when_merging_an_array_with_dot_child_tag () {
+		RestArray target = new RestArray ("users", "user");
+		RestArray source = new RestArray ("modified", ".");
+
+		target.merge (source);
+
+		assertThat (target.getChildTag (), is ("user"));
+	}
+
+	@Test
+	public void it_should_keep_the_new_tag_name_when_merging_arrays () {
+		RestArray target = new RestArray ("original");
+		RestArray source = new RestArray ("modified");
+
+		target.merge (source);
+
+		assertThat (target.getTag (), is ("modified"));
+	}
+
+	@Test
+	public void it_should_keep_the_new_tag_name_when_merging_objects () {
+		RestObject target = new RestObject ("original");
+		RestObject source = new RestObject ("modified");
+
+		target.merge (source);
+
+		assertThat (target.getTag (), is ("modified"));
+	}
+
+	@Test
+	public void it_should_keep_the_new_child_tag_name_when_merging_arrays () {
+		RestArray target = new RestArray ("users", "user");
+		RestArray source = new RestArray ("modified", "modifiedChildTag");
+
+		target.merge (source);
+
+		assertThat (target.getChildTag (), is ("modifiedChildTag"));
 	}
 
 	@Test (expected = RuntimeException.class)

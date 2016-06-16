@@ -119,6 +119,9 @@ public class RestObject extends LinkedHashMap<String, Object> implements RestStr
 	}
 
 	public RestObject merge (RestObject source) {
+		if ( source.getTag () != null ) {
+			this.tag (source.getTag ());
+		}
 		for ( String key : source.keySet () ) {
 			Object sourceValue = source.get (key);
 			Object targetValue = super.get (key);

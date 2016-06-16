@@ -130,6 +130,12 @@ public class RestArray extends LinkedList<Object> implements RestStructure {
 	}
 
 	public RestArray merge (RestArray source) {
+		if ( source.getTag () != null ) {
+			this.tag (source.getTag ());
+		}
+		if ( source.getChildTag () != null && ! source.getChildTag ().equals (".") ) {
+			this.childTag (source.getChildTag ());
+		}
 		for ( Object object : source ) {
 			if ( object instanceof RestObject ) {
 				this.add (new RestObject ().merge ((RestObject) object));
