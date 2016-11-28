@@ -1,12 +1,20 @@
 package org.tutske.rest;
 
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.ResponseException;
 import org.tutske.rest.internals.*;
 
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +30,7 @@ public class Server {
 	private Handler sockets = null;
 
 	private UrlRouter<ControllerFunction> router = null;
-	private FilterCollection<HttpRequest, RestStructure>  filters = null;
+	private FilterCollection<HttpRequest, RestStructure> filters = null;
 	private Map<String, Serializer> serializers = null;
 	private String defaultSerializer = null;
 
@@ -33,6 +41,31 @@ public class Server {
 	public Server (String baseurl, int port) {
 		this.server = new org.eclipse.jetty.server.Server (port);
 		this.baseurl = baseurl;
+	}
+
+	public Server configureSsl (int port, KeyStore keys, KeyStore trusted, String password) {
+		SslContextFactory ssl = new SslContextFactory ();
+		ssl.setKeyStore (keys);
+		ssl.setTrustStore (trusted);
+		ssl.setKeyStorePassword (password);
+
+		ssl.setWantClientAuth (true);
+
+		HttpConfiguration https = new HttpConfiguration ();
+		https.addCustomizer (new SecureRequestCustomizer ());
+		https.setSecureScheme ("https");
+
+		ServerConnector sslConnector = new ServerConnector (
+			server,
+			new SslConnectionFactory (ssl, HttpVersion.HTTP_1_1.asString ()),
+			new HttpConnectionFactory (https)
+		);
+
+		sslConnector.setPort (port);
+
+		server.addConnector (sslConnector);
+
+		return this;
 	}
 
 	public Server configureRoutes (UrlRouter<ControllerFunction> router) {
