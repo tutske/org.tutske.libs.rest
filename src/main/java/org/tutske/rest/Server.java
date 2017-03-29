@@ -21,8 +21,6 @@ import java.util.Map;
 
 public class Server {
 
-	private static int DEFAULT_PORT = 8080;
-
 	private final org.eclipse.jetty.server.Server server;
 	private final String baseurl;
 
@@ -33,10 +31,6 @@ public class Server {
 	private FilterCollection<HttpRequest, RestStructure> filters = null;
 	private Map<String, Serializer> serializers = null;
 	private String defaultSerializer = null;
-
-	public Server (String baseurl) {
-		this (baseurl, DEFAULT_PORT);
-	}
 
 	public Server (String baseurl, int port) {
 		this.server = new org.eclipse.jetty.server.Server (port);
