@@ -4,7 +4,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.WebSocketListener;
-import org.tutske.rest.internals.SocketHandler;
 
 
 public class WebSocketListenerWrapper implements WebSocketListener {

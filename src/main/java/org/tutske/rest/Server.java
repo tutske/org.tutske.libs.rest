@@ -138,6 +138,7 @@ public class Server {
 
 		serializers.put ("application/json", new JsonSerializer ());
 		serializers.put ("application/xml", new XmlSerializer ());
+		serializers.put ("application/javascript", new JsonPSerializer ());
 		serializers.put ("default", serializers.get ("application/json"));
 
 		return serializers;
