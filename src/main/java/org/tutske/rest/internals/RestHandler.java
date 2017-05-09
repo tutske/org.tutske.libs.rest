@@ -59,7 +59,7 @@ public class RestHandler extends AbstractHandler {
 		try {
 			ParameterBag data = route.extractMatches (s, s.substring (1).split ("/"));
 			HttpRequest r = new HttpRequest (request, response, data);
-			result = route.getHandler ().apply (r);
+			result = filters.createChain (s, (rr) -> route.getHandler ().apply (rr)).call (r);
 			if ( response.getStatus () != 0 ) {
 				status = response.getStatus ();
 			}
