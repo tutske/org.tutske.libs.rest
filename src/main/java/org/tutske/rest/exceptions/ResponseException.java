@@ -50,11 +50,12 @@ public class ResponseException extends RuntimeException {
 	}
 
 	public RestStructure asRestStructure () {
+		String msg = getMessage ();
 		return new RestObject ("error") {{
 			v ("type", baseUrl + type);
 			v ("title", title);
 			v ("status", status);
-			v ("detail", getMessage ());
+			v ("detail", msg == null ? "" : msg);
 		}}.merge (this.data);
 	}
 
