@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -78,6 +79,7 @@ public class RestObjectTest {
 		assertThat (json, is ("{\"key\":[1,2,3]}"));
 	}
 
+	@Ignore ("not a good idea?")
 	@Test (expected = RuntimeException.class)
 	public void it_should_complain_when_the_value_is_not_primitive_and_not_rest () {
 		new RestObject () {{

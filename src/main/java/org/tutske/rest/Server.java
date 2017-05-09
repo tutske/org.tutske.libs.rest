@@ -1,5 +1,6 @@
 package org.tutske.rest;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -31,6 +32,7 @@ public class Server {
 	private FilterCollection<HttpRequest, RestStructure> filters = null;
 	private Map<String, Serializer> serializers = null;
 	private String defaultSerializer = null;
+	private Gson gson = new Gson ();
 
 	public Server (String baseurl, int port) {
 		this.server = new org.eclipse.jetty.server.Server (port);
@@ -94,6 +96,11 @@ public class Server {
 		return this;
 	}
 
+	public Server configureGson (Gson gson) {
+		this.gson = gson;
+		return this;
+	}
+
 	public void start () throws Exception {
 		startAsync ();
 		server.join ();
@@ -136,7 +143,7 @@ public class Server {
 	private Map<String, Serializer> defaultSerializers () {
 		Map<String, Serializer> serializers = new HashMap<> ();
 
-		serializers.put ("application/json", new JsonSerializer ());
+		serializers.put ("application/json", new JsonSerializer (gson));
 		serializers.put ("application/xml", new XmlSerializer ());
 		serializers.put ("application/javascript", new JsonPSerializer ());
 		serializers.put ("default", serializers.get ("application/json"));

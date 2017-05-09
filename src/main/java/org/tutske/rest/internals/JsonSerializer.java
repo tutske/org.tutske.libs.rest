@@ -10,7 +10,15 @@ import java.util.Map;
 
 public class JsonSerializer implements Serializer {
 
-	private final Gson gson = new GsonBuilder ().setPrettyPrinting ().create ();
+	private final Gson gson;
+
+	public JsonSerializer () {
+		this (new GsonBuilder ().create ());
+	}
+
+	public JsonSerializer (Gson gson) {
+		this.gson = gson;
+	}
 
 	@Override
 	public String serialize (RestStructure structure, Map<String, String> attributes) {

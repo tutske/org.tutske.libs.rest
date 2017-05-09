@@ -1,5 +1,6 @@
 package org.tutske.rest.data;
 
+
 public class RestUtil {
 
 	public static void assureValid (Object object) {
@@ -9,7 +10,7 @@ public class RestUtil {
 	}
 
 	public static boolean isValid (Object object) {
-		return (object instanceof RestStructure) || isPrimitive (object);
+		return true;
 	}
 
 	public static void assurePrimitive (Object object) {

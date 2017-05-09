@@ -12,7 +12,7 @@ import java.util.List;
 
 public class FilterCollection<S, T> {
 
-	List<UrlRoute<Filter<S,T>>> routes = new LinkedList<> ();
+	private List<UrlRoute<Filter<S, T>>> routes = new LinkedList<> ();
 
 	public Chain<S, T> createChain (String url, ThrowingFunction<S, T> destination) {
 		List<Filter<S, T>> filters = new LinkedList<> ();
@@ -22,7 +22,7 @@ public class FilterCollection<S, T> {
 				filters.add (route.getHandler ());
 			}
 		}
-		return new Chain<S, T> (destination, filters);
+		return new Chain<> (destination, filters);
 	}
 
 	public void add (String label, UrlRoute<Filter<S, T>> ... routes) {
