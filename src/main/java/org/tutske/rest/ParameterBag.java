@@ -277,4 +277,31 @@ public class ParameterBag<T> implements Map<String, T> {
 		return null;
 	}
 
+	@Override
+	public String toString () {
+		StringBuilder builder = new StringBuilder ();
+
+		for ( String key : this.data.keySet () ) {
+			List<T> values = this.data.get (key);
+			if ( values.isEmpty () ) { continue; }
+
+			builder.append (", ").append ("\"").append (key).append ("\"").append (": ");
+
+			if ( values.size () == 1 ) {
+				builder.append ("\"").append (values.get (0)).append ("\"");
+			} else {
+				builder.append ("[ ");
+				values.forEach ((value) -> {
+					builder.append ("\"").append (value).append ("\"").append (", ");
+				});
+				builder.replace (builder.length () - 2, builder.length (), " ]");
+			}
+		}
+
+		builder.replace (0, 2, "{ ");
+		builder.append (" }");
+
+		return builder.toString ();
+	}
+
 }
