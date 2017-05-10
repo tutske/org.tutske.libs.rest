@@ -33,6 +33,7 @@ public abstract class UrlRoute<T> {
 		protected final EnumSet<Method> methods;
 		protected final String [] descriptor;
 		protected final boolean [] shouldMatch;
+		protected final boolean allowTail;
 
 		public BaseRoute (String identifier, String descriptor, T handler) {
 			this (identifier, descriptor, EnumSet.of (Method.GET), handler);
@@ -48,6 +49,7 @@ public abstract class UrlRoute<T> {
 			this.methods = methods;
 			this.descriptor = descriptor.substring (1).split ("/");
 			this.shouldMatch = new boolean [this.descriptor.length];
+			this.allowTail = this.descriptor[this.descriptor.length - 1].startsWith ("::");
 
 			processDescriptor ();
 		}
@@ -140,24 +142,38 @@ public abstract class UrlRoute<T> {
 		}
 
 		@Override public boolean matches (Method method, String url, String [] parts) {
-			if ( parts.length != this.descriptor.length || ! methods.contains (method) ) {
-				return false;
-			}
+			if ( ! methods.contains (method) ) { return false; }
+			if ( ! this.allowTail && parts.length != this.descriptor.length ) { return false; }
+
 			for ( int i = 0; i < descriptor.length; i++ ) {
 				if ( shouldMatch[i] && ! descriptor[i].equals (parts[i]) ) {
 					return false;
 				}
 			}
+
 			return true;
 		}
 
 		@Override public ParameterBag extractMatches (String url, String [] parts) {
 			ParameterBag extracted = new ParameterBag ();
+			int last = descriptor.length - 1;
 			for ( int i = 0; i < descriptor.length; i++ ) {
 				if ( shouldMatch [i] ) { continue; }
-				extracted.add (descriptor[i].substring (1), parts[i]);
+				if ( i == last && descriptor[i].startsWith ("::") ) {
+					extracted.add (descriptor[i].substring (2), join (parts, i));
+				} else {
+					extracted.add (descriptor[i].substring (1), parts[i]);
+				}
 			}
 			return extracted;
+		}
+
+		private String join (String [] parts, int index) {
+			StringBuilder builder = new StringBuilder ();
+			for ( int i = index; i < parts.length; i++ ) {
+				builder.append ("/").append (parts[i]);
+			}
+			return builder.toString ();
 		}
 	}
 
