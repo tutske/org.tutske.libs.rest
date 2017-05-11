@@ -17,14 +17,14 @@ public class HttpRequest {
 
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
-	private final ParameterBag path;
-	private final ParameterBag queryParams;
+	private final ParameterBag<String> path;
+	private final ParameterBag<String> queryParams;
 
-	public HttpRequest (HttpServletRequest request, HttpServletResponse response, ParameterBag path) {
+	public HttpRequest (HttpServletRequest request, HttpServletResponse response, ParameterBag<String> path) {
 		this.request = request;
 		this.response = response;
 		this.path = path;
-		this.queryParams = new ParameterBag ();
+		this.queryParams = new ParameterBag<> ();
 	}
 
 	public HttpServletRequest getServletRequest () {
@@ -47,11 +47,11 @@ public class HttpRequest {
 		return request.getRequestURI ();
 	}
 
-	public ParameterBag pathParams () {
+	public ParameterBag<String> pathParams () {
 		return path;
 	}
 
-	public ParameterBag queryParams () {
+	public ParameterBag<String> queryParams () {
 		if ( queryParams.isEmpty () ) {
 			QueryStringDecoder.decodeInto (queryParams, request.getQueryString ());
 		}

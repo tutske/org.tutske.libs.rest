@@ -10,9 +10,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
-public class ParameterBag implements Map<String, String> {
+public class ParameterBag<T> implements Map<String, T> {
 
-	private final Map<String, List<String>> data = new LinkedHashMap<String, List<String>> ();
+	private final Map<String, List<T>> data = new LinkedHashMap<> ();
 
 	@Override
 	public int size () {
@@ -34,7 +34,7 @@ public class ParameterBag implements Map<String, String> {
 		if ( value == null ) {
 			return false;
 		}
-		for ( List<String> vals : data.values () ) {
+		for ( List<T> vals : data.values () ) {
 			if ( vals.contains (value) ) {
 				return true;
 			}
@@ -42,31 +42,31 @@ public class ParameterBag implements Map<String, String> {
 		return false;
 	}
 
-	public ParameterBag add (String key, String... values) {
+	public ParameterBag add (String key, T ... values) {
 		return addAll (key, Arrays.asList (values));
 	}
 
-	public ParameterBag addAll (String key, Collection<String> values) {
-		List<String> retrieved = data.get (key);
+	public ParameterBag addAll (String key, Collection<? extends T> values) {
+		List<T> retrieved = data.get (key);
 		if ( retrieved == null ) {
-			retrieved = new LinkedList<String> ();
+			retrieved = new LinkedList<T> ();
 			data.put (key, retrieved);
 		}
 		retrieved.addAll (values);
 		return this;
 	}
 
-	public void addAll (Map<? extends String, ? extends String> m) {
+	public void addAll (Map<? extends String, ? extends T> m) {
 		m.forEach (this::add);
 	}
 
-	public void addAll (ParameterBag bag) {
+	public void addAll (ParameterBag<? extends T> bag) {
 		bag.data.forEach (this::addAll);
 	}
 
 	@Override
-	public boolean replace (String key, String oldValue, String newValue) {
-		List<String> values = data.get (key);
+	public boolean replace (String key, T oldValue, T newValue) {
+		List<T> values = data.get (key);
 		if ( values == null || values.isEmpty () ) {
 			return false;
 		}
@@ -77,19 +77,29 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public String get (Object key) {
-		return get (key, String.class);
+	public T get (Object key) {
+		List<T> values = data.get (key);
+
+		if ( values == null || values.isEmpty () ) {
+			return null;
+		}
+
+		return values.get (0);
 	}
 
-	public <T> T get (Object key, Class<T> clazz) {
-		List<String> values = data.get (key);
+	public <S> S getAs (Object key, Class<S> clazz) {
+		return (S) get (key);
+	}
+
+	public <S> S converted (Object key, Class<S> clazz) {
+		List<T> values = data.get (key);
 
 		if ( values == null || values.isEmpty () ) {
 			return null;
 		}
 
 		try {
-			return PrimitivesParser.parse (values.get (0), clazz);
+			return PrimitivesParser.parse (values.get (0).toString (), clazz);
 		} catch ( NumberFormatException excetion ) {
 			throw new WrongValueException (
 				"The value is not of the right type.",
@@ -101,36 +111,36 @@ public class ParameterBag implements Map<String, String> {
 		}
 	}
 
-	public Set<String> getAll (Object key) {
-		List<String> values = data.get (key);
+	public Set<T> getAll (Object key) {
+		List<T> values = data.get (key);
 		if ( values == null ) {
 			return Collections.emptySet ();
 		}
-		return new HashSet<String> (values);
+		return new HashSet<T> (values);
 	}
 
 	@Override
-	public String replace (String key, String value) {
-		String current = get (key);
+	public T replace (String key, T value) {
+		T current = get (key);
 		boolean success = replace (key, current, value);
 		return success ? current : null;
 	}
 
 	@Override
-	public String put (String key, String value) {
+	public T put (String key, T value) {
 		if ( ! containsKey (key) ) {
 			add (key, value);
 			return null;
 		} else {
-			List<String> values = data.get (key);
-			String current = values.isEmpty () ? null : values.get (0);
+			List<T> values = data.get (key);
+			T current = values.isEmpty () ? null : values.get (0);
 			values.add (0, value);
 			return current;
 		}
 	}
 
 	@Override
-	public void putAll (Map<? extends String, ? extends String> m) {
+	public void putAll (Map<? extends String, ? extends T> m) {
 		m.forEach (this::put);
 	}
 
@@ -144,12 +154,12 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public String remove (Object key) {
-		List<String> values = data.get (key);
+	public T remove (Object key) {
+		List<T> values = data.get (key);
 		if ( values == null || values.isEmpty () ) {
 			return null;
 		}
-		String removed = values.remove (0);
+		T removed = values.remove (0);
 		if ( values.isEmpty () ) {
 			data.remove (key);
 		}
@@ -158,7 +168,7 @@ public class ParameterBag implements Map<String, String> {
 
 	@Override
 	public boolean remove (Object key, Object value) {
-		List<String> values = data.get (key);
+		List<T> values = data.get (key);
 		if ( values == null || values.isEmpty () ) {
 			return false;
 		}
@@ -175,8 +185,8 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public Collection<String> values () {
-		Set<String> values = new HashSet<String> ();
+	public Collection<T> values () {
+		Set<T> values = new HashSet<> ();
 		data.forEach ((key, value) -> {
 			if ( value == null || value.isEmpty () ) {
 				return;
@@ -187,26 +197,23 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public Set<Entry<String, String>> entrySet () {
-		Set<Entry<String, String>> entries = new HashSet<Entry<String, String>> ();
+	public Set<Entry<String, T>> entrySet () {
+		Set<Entry<String, T>> entries = new HashSet<> ();
 		data.forEach ((key, value) -> {
 			if ( value == null || value.isEmpty () ) {
 				return;
 			}
-			entries.add (new Entry<String, String> () {
-				@Override
-				public String getKey () {
+			entries.add (new Entry<String, T> () {
+				@Override public String getKey () {
 					return key;
 				}
 
-				@Override
-				public String getValue () {
+				@Override public T getValue () {
 					return value.get (0);
 				}
 
-				@Override
-				public String setValue (String value) {
-					String current = data.get (key).get (0);
+				@Override public T setValue (T value) {
+					T current = data.get (key).get (0);
 					data.get (key).add (0, value);
 					return current;
 				}
@@ -216,7 +223,7 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public String getOrDefault (Object key, String defaultValue) {
+	public T getOrDefault (Object key, T defaultValue) {
 		if ( ! containsKey (key) ) {
 			return defaultValue;
 		}
@@ -224,7 +231,7 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public void forEach (BiConsumer<? super String, ? super String> action) {
+	public void forEach (BiConsumer<? super String, ? super T> action) {
 		data.forEach ((key, values) -> {
 			values.forEach ((value) -> {
 				action.accept (key, value);
@@ -233,7 +240,7 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public void replaceAll (BiFunction<? super String, ? super String, ? extends String> function) {
+	public void replaceAll (BiFunction<? super String, ? super T, ? extends T> function) {
 		data.forEach ((key, values) -> {
 			values.replaceAll ((value) -> {
 				return function.apply (key, value);
@@ -242,7 +249,7 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public String putIfAbsent (String key, String value) {
+	public T putIfAbsent (String key, T value) {
 		if ( containsKey (key) ) {
 			return get (key);
 		}
@@ -251,22 +258,23 @@ public class ParameterBag implements Map<String, String> {
 	}
 
 	@Override
-	public String computeIfAbsent (String key, Function<? super String, ? extends String> mappingFunction) {
+	public T computeIfAbsent (String key, Function<? super String, ? extends T> mappingFunction) {
 		return null;
 	}
 
 	@Override
-	public String computeIfPresent (String key, BiFunction<? super String, ? super String, ? extends String> remappingFunction) {
+	public T computeIfPresent (String key, BiFunction<? super String, ? super T, ? extends T> remappingFunction) {
 		return null;
 	}
 
 	@Override
-	public String compute (String key, BiFunction<? super String, ? super String, ? extends String> remappingFunction) {
+	public T compute (String key, BiFunction<? super String, ? super T, ? extends T> remappingFunction) {
 		return null;
 	}
 
 	@Override
-	public String merge (String key, String value, BiFunction<? super String, ? super String, ? extends String> remappingFunction) {
+	public T merge (String key, T value, BiFunction<? super T, ? super T, ? extends T> remappingFunction) {
 		return null;
 	}
+
 }
