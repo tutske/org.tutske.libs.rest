@@ -60,6 +60,9 @@ public class RestHandler extends AbstractHandler {
 			ParameterBag data = route.extractMatches (s, s.substring (1).split ("/"));
 			HttpRequest r = new HttpRequest (request, response, data);
 			result = route.getHandler ().apply (r);
+			if ( response.getStatus () != 0 ) {
+				status = response.getStatus ();
+			}
 		} catch (ResponseException exception) {
 			result = exception.asRestStructure ();
 			status = exception.getStatusCode ();

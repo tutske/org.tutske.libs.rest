@@ -8,8 +8,10 @@ import static org.mockito.Mockito.*;
 
 import org.eclipse.jetty.server.Request;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.tutske.rest.ControllerFunction;
 import org.tutske.rest.HttpRequest;
 import org.tutske.rest.UrlRoute.ControllerRoute;
@@ -126,6 +128,21 @@ public class RestHandlerTest {
 	public void it_should_apply_a_filter_that_matches () throws Exception {
 		handler = new RestHandler (router);
 		get ("/dummy");
+	}
+
+	@Test
+	public void it_should_keep_the_status_set_from_the_handle () throws Exception {
+		router.add (new ControllerRoute ("set-status", "/set-status-code", (request) -> {
+			when (response.getStatus ()).thenReturn (201);
+			request.getServletResponse ().setStatus (201);
+			return new RestObject ();
+		}));
+
+		handler = new RestHandler (router);
+		get ("/set-status-code");
+
+		verify (response, times (0)).setStatus (intThat (not (201)));
+		verify (response, atLeast (1)).setStatus (201);
 	}
 
 	private void get (String url) throws Exception {
