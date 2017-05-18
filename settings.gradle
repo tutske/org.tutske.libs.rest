@@ -1,0 +1,4 @@
+pluginManagement.repositories {
+	maven { url (System.getProperty ("user.home") + '/.m2/repository') }
+}
+rootProject.name = 'ts-libs-rest'
