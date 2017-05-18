@@ -15,6 +15,7 @@ public class HttpRequest {
 		HEAD, OPTIONS, GET, POST, PUT, DELETE, TRACE
 	}
 
+	private final ParameterBag<Object> context = new ParameterBag<> ();
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
 	private final ParameterBag<String> path;
@@ -56,6 +57,10 @@ public class HttpRequest {
 			QueryStringDecoder.decodeInto (queryParams, request.getQueryString ());
 		}
 		return queryParams;
+	}
+
+	public ParameterBag<Object> context () {
+		return this.context;
 	}
 
 	public String getBody () {
