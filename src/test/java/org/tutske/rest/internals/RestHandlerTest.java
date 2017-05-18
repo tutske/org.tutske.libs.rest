@@ -6,27 +6,20 @@ import static org.mockito.Matchers.intThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.eclipse.jetty.server.Request;
-
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.tutske.rest.ControllerFunction;
 import org.tutske.rest.HttpRequest;
 import org.tutske.rest.UrlRoute.ControllerRoute;
 import org.tutske.rest.UrlRouter;
 import org.tutske.rest.data.RestObject;
 import org.tutske.rest.exceptions.ResponseException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import org.tutske.rest.util.RoundTrip;
 
 
 public class RestHandlerTest {
 
-	private static final UrlRouter<ControllerFunction> router = new UrlRouter<ControllerFunction> ().add (
+	private final UrlRouter<ControllerFunction> router = new UrlRouter<ControllerFunction> ().add (
 		new ControllerRoute ("dummy", "/dummy", RestHandlerTest::dummy),
 		new ControllerRoute ("fail", "/fail", RestHandlerTest::fail),
 		new ControllerRoute ("fail", "/hard-fail", RestHandlerTest::hardFail)
@@ -46,42 +39,31 @@ public class RestHandlerTest {
 		throw new RuntimeException ("Internal Error");
 	}
 
-	private Request base;
-	private HttpServletRequest request;
-	private HttpServletResponse response;
+	private RoundTrip trip = new RoundTrip ();
 	private RestHandler handler;
-
-	private ByteArrayOutputStream _output;
-	private PrintWriter _writer;
 
 	@Before
 	public void setup () throws Exception {
-		base = mock (Request.class);
-		request = mock (HttpServletRequest.class);
-		response = mock (HttpServletResponse.class);
-
-		_output = new ByteArrayOutputStream ();
-		_writer = new PrintWriter (_output);
-		when (response.getWriter ()).thenReturn (_writer);
+		trip.setup ();
 	}
 
 	@Test
 	public void sanity_check_directly_writing_to_output () throws Exception {
-		_output.write ("Hello World!".getBytes ());
-		assertThat (output (), is ("Hello World!"));
+		trip._output.write ("Hello World!".getBytes ());
+		assertThat (trip.output (), is ("Hello World!"));
 	}
 
 	@Test
 	public void sanity_check_output_functionality () throws Exception {
-		response.getWriter ().write ("Hello World!");
-		assertThat (output (), is ("Hello World!"));
+		trip.response.getWriter ().write ("Hello World!");
+		assertThat (trip.output (), is ("Hello World!"));
 	}
 
 	@Test
 	public void it_should_return_a_success_200_ok_code_for_normal_actions () throws Exception {
 		handler = new RestHandler (router);
-		get ("/dummy");
-		verify (response).setStatus (200);
+		trip.get (handler, "/dummy");
+		verify (trip.response).setStatus (200);
 	}
 
 	@Test
@@ -90,69 +72,59 @@ public class RestHandlerTest {
 			put ("default", new JsonSerializer ());
 		}});
 
-		get ("/dummy");
+		trip.get (handler, "/dummy");
 
-		assertThat (output (), containsString ("greeting"));
-		assertThat (output (), containsString ("Hello World"));
+		assertThat (trip.output (), containsString ("greeting"));
+		assertThat (trip.output (), containsString ("Hello World"));
 	}
 
 	@Test
 	public void it_should_do_nothing_when_the_url_is_not_routed () throws Exception {
 		handler = new RestHandler (router);
-		get ("/unknown/path/to/resources");
-		verify (response, never ()).setStatus (anyInt ());
+		trip.get (handler, "/unknown/path/to/resources");
+		verify (trip.response, never ()).setStatus (anyInt ());
 	}
 
 	@Test
 	public void it_should_return_an_error_code_when_a_response_exception_is_thrown () throws Exception {
 		handler = new RestHandler (router);
-		get ("/fail");
-		verify (response).setStatus (codeRange (400));
+		trip.get (handler, "/fail");
+		verify (trip.response).setStatus (codeRange (400));
 	}
 
 	@Test
 	public void it_should_return_an_error_code_when_a_different_exception_is_thrown () throws Exception {
 		handler = new RestHandler (router);
-		get ("/hard-fail");
-		verify (response).setStatus (codeRange (500));
+		trip.get (handler, "/hard-fail");
+		verify (trip.response).setStatus (codeRange (500));
 	}
 
 	@Test
 	public void it_should_proceed_as_normal_when_not_having_any_filters () throws Exception {
 		handler = new RestHandler (router);
-		get ("/dummy");
-		verify (response).setStatus (200);
+		trip.get (handler, "/dummy");
+		verify (trip.response).setStatus (200);
 	}
 
 	@Test
 	public void it_should_apply_a_filter_that_matches () throws Exception {
 		handler = new RestHandler (router);
-		get ("/dummy");
+		trip.get (handler, "/dummy");
 	}
 
 	@Test
 	public void it_should_keep_the_status_set_from_the_handle () throws Exception {
 		router.add (new ControllerRoute ("set-status", "/set-status-code", (request) -> {
-			when (response.getStatus ()).thenReturn (201);
+			when (trip.response.getStatus ()).thenReturn (201);
 			request.getServletResponse ().setStatus (201);
 			return new RestObject ();
 		}));
 
 		handler = new RestHandler (router);
-		get ("/set-status-code");
+		trip.get (handler, "/set-status-code");
 
-		verify (response, times (0)).setStatus (intThat (not (201)));
-		verify (response, atLeast (1)).setStatus (201);
-	}
-
-	private void get (String url) throws Exception {
-		when (request.getMethod ()).thenReturn ("GET");
-		handler.handle (url, base, request, response);
-	}
-
-	private String output () {
-		_writer.flush ();
-		return new String (_output.toByteArray ());
+		verify (trip.response, times (0)).setStatus (intThat (not (201)));
+		verify (trip.response, atLeast (1)).setStatus (201);
 	}
 
 	private Integer codeRange (int lower) {

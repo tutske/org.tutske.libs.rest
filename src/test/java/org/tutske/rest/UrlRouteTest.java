@@ -21,6 +21,12 @@ public class UrlRouteTest {
 	}
 
 	@Test
+	public void it_should_match_the_specified_urls_with_trailing_slash () {
+		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", null);
+		assertThat (route.matches (GET, "/users/abc/"), is (true));
+	}
+
+	@Test
 	public void it_should_match_with_or_without_a_trailing_slach () {
 		UrlRoute<?> route = new SimpleRoute<> ("user", "/users/:id", null);
 		assertThat (route.matches (GET, "/users/abc/"), is (true));
@@ -50,6 +56,16 @@ public class UrlRouteTest {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", EnumSet.of (POST, PUT), null);
 		assertThat (route.matches (GET, "/users/abc/"), is (false));
 		assertThat (route.matches (HEAD, "/users/abc/"), is (false));
+	}
+
+	@Test
+	public void it_should_only_match_urls_with_the_right_number_of_parts () {
+		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", null);
+
+		assertThat (route.matches (GET, "/users"), is (false));
+		assertThat (route.matches (GET, "/users/"), is (false));
+		assertThat (route.matches (GET, "/users/3/update"), is (false));
+		assertThat (route.matches (GET, "/users/3/update/"), is (false));
 	}
 
 	@Test
@@ -89,6 +105,37 @@ public class UrlRouteTest {
 		params.put ("id", "abc");
 
 		assertThat (route.linkTo (params), containsString ("/users/abc"));
+	}
+
+	@Test
+	public void it_should_match_url_with_trailing_path_paths () {
+		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
+		assertThat (route.matches (GET, "/files/with/long/path/to/file.ext"), is (true));
+	}
+
+	@Test
+	public void it_shouldSmatch_url_with_trailing_empty_paths () {
+		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
+		assertThat (route.matches (GET, "/files"), is (true));
+	}
+
+	@Test
+	public void it_should_match_url_with_trailing_empty_paths_with_trailing_slash () {
+		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
+		assertThat (route.matches (GET, "/files/"), is (true));
+	}
+
+	@Test
+	public void it_should_put_the_trailing_path_in_the_params () {
+		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
+		String url = "/files/with/long/path/to/file.ext";
+		String [] parts = url.substring (1).split ("/");
+
+		Map<String, String> params = route.extractMatches (url, parts);
+		System.out.println (params);
+
+		assertThat (params, hasKey ("path"));
+		assertThat (params.get ("path"), is ("/with/long/path/to/file.ext"));
 	}
 
 	// Distinguish between get, post, put, ... request.

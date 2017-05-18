@@ -25,12 +25,14 @@ public class FilterCollection<S, T> {
 		return new Chain<> (destination, filters);
 	}
 
-	public void add (String label, UrlRoute<Filter<S, T>> ... routes) {
+	public FilterCollection<S, T> add (String label, UrlRoute<Filter<S, T>> ... routes) {
 		Collections.addAll (this.routes, routes);
+		return this;
 	}
 
-	public void add (UrlRoute<Filter<S, T>> ... routes) {
+	public FilterCollection<S, T> add (UrlRoute<Filter<S, T>> ... routes) {
 		Collections.addAll (this.routes, routes);
+		return this;
 	}
 
 }
