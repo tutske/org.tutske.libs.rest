@@ -4,7 +4,6 @@ import static org.junit.Assert.assertThat;
 import static org.tutske.rest.data.XmlUtils.*;
 
 import org.junit.Test;
-import org.tutske.rest.internals.JsonSerializer;
 
 
 public class ComplexXmlTest {
@@ -42,9 +41,6 @@ public class ComplexXmlTest {
 				}});
 			}});
 		}};
-
-		System.out.println (new JsonSerializer ().serialize (structure));
-		System.out.println (marshall (structure));
 
 		assertThat (marshall (structure), matchesXml (""
 			, "<response processTime=\"123ms\" cachable=\"true\">"

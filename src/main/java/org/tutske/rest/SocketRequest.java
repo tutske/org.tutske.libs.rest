@@ -11,14 +11,14 @@ public class SocketRequest {
 
 	private final ServletUpgradeRequest request;
 	private final ServletUpgradeResponse response;
-	private final ParameterBag path;
-	private final ParameterBag queryParams;
+	private final ParameterBag<String> path;
+	private final ParameterBag<String> queryParams;
 
-	public SocketRequest (ServletUpgradeRequest request, ServletUpgradeResponse response, ParameterBag path) {
+	public SocketRequest (ServletUpgradeRequest request, ServletUpgradeResponse response, ParameterBag<String> path) {
 		this.request = request;
 		this.response = response;
 		this.path = path;
-		this.queryParams = new ParameterBag ();
+		this.queryParams = new ParameterBag<> ();
 	}
 
 
@@ -42,11 +42,11 @@ public class SocketRequest {
 		return getServletRequest ().getRequestURI ();
 	}
 
-	public ParameterBag pathParams () {
+	public ParameterBag<String> pathParams () {
 		return path;
 	}
 
-	public ParameterBag queryParams () {
+	public ParameterBag<String> queryParams () {
 		if ( queryParams.isEmpty () ) {
 			QueryStringDecoder.decodeInto (queryParams, request.getQueryString ());
 		}

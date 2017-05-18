@@ -115,7 +115,7 @@ public abstract class UrlRoute<T> {
 	 * Things such as `/fixed/part/:variable/or/:other/variables`.
 	 *
 	 * basic route matching, should be very fast, if the split string is passed instead
-	 * of the plain url this should not have a noticble impact on performance.
+	 * of the plain url this should not have a noticeable impact on performance.
 	 *
 	 * have a separate class that can do more fancy matchings such as globbing more than
 	 * one part of the url. This could still be done with a bit more fancy matching

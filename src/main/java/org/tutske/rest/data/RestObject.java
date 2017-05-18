@@ -154,7 +154,7 @@ public class RestObject extends LinkedHashMap<String, Object> implements RestStr
 		return this;
 	}
 
-	/** disable thesee **/
+	/** disable these **/
 
 	@Override
 	public Object merge (String key, Object value, BiFunction<? super Object, ? super Object, ?> remappingFunction) {
