@@ -1,6 +1,7 @@
 package org.tutske.rest;
 
 import org.tutske.rest.internals.QueryStringDecoder;
+import org.tutske.utils.Bag;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,17 +16,17 @@ public class HttpRequest {
 		HEAD, OPTIONS, GET, POST, PUT, DELETE, TRACE
 	}
 
-	private final ParameterBag<Object> context = new ParameterBag<> ();
+	private final Bag<String, Object> context = new Bag<> ();
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
-	private final ParameterBag<String> path;
-	private final ParameterBag<String> queryParams;
+	private final Bag<String, String> path;
+	private final Bag<String, String> queryParams;
 
-	public HttpRequest (HttpServletRequest request, HttpServletResponse response, ParameterBag<String> path) {
+	public HttpRequest (HttpServletRequest request, HttpServletResponse response, Bag<String, String> path) {
 		this.request = request;
 		this.response = response;
 		this.path = path;
-		this.queryParams = new ParameterBag<> ();
+		this.queryParams = new Bag<> ();
 	}
 
 	public HttpServletRequest getServletRequest () {
@@ -48,18 +49,18 @@ public class HttpRequest {
 		return request.getRequestURI ();
 	}
 
-	public ParameterBag<String> pathParams () {
+	public Bag<String, String> pathParams () {
 		return path;
 	}
 
-	public ParameterBag<String> queryParams () {
+	public Bag<String, String> queryParams () {
 		if ( queryParams.isEmpty () ) {
 			QueryStringDecoder.decodeInto (queryParams, request.getQueryString ());
 		}
 		return queryParams;
 	}
 
-	public ParameterBag<Object> context () {
+	public Bag<String, Object> context () {
 		return this.context;
 	}
 

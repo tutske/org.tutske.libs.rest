@@ -4,10 +4,10 @@ import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.tutske.rest.HttpRequest;
-import org.tutske.rest.ParameterBag;
 import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.InvalidJwtException;
 import org.tutske.rest.internals.Chain;
+import org.tutske.utils.Bag;
 import org.tutske.utils.Clock;
 
 import java.util.Date;
@@ -35,7 +35,7 @@ public class JwtFilterTest {
 		}
 	}
 
-	private ParameterBag<Object> context = new ParameterBag<> ();
+	private Bag<String, Object> context = new Bag<String, Object> ();
 	private HttpRequest request = when (mock (HttpRequest.class).context ()).thenReturn (context).getMock ();
 	private Clock clock = when (mock (Clock.class).now ()).thenReturn (now).getMock ();
 

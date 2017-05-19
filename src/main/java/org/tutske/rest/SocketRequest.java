@@ -3,6 +3,7 @@ package org.tutske.rest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.tutske.rest.internals.QueryStringDecoder;
+import org.tutske.utils.Bag;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,14 +12,14 @@ public class SocketRequest {
 
 	private final ServletUpgradeRequest request;
 	private final ServletUpgradeResponse response;
-	private final ParameterBag<String> path;
-	private final ParameterBag<String> queryParams;
+	private final Bag<String, String> path;
+	private final Bag<String, String> queryParams;
 
-	public SocketRequest (ServletUpgradeRequest request, ServletUpgradeResponse response, ParameterBag<String> path) {
+	public SocketRequest (ServletUpgradeRequest request, ServletUpgradeResponse response, Bag<String, String> path) {
 		this.request = request;
 		this.response = response;
 		this.path = path;
-		this.queryParams = new ParameterBag<> ();
+		this.queryParams = new Bag<> ();
 	}
 
 
@@ -42,11 +43,11 @@ public class SocketRequest {
 		return getServletRequest ().getRequestURI ();
 	}
 
-	public ParameterBag<String> pathParams () {
+	public Bag<String, String> pathParams () {
 		return path;
 	}
 
-	public ParameterBag<String> queryParams () {
+	public Bag<String, String> queryParams () {
 		if ( queryParams.isEmpty () ) {
 			QueryStringDecoder.decodeInto (queryParams, request.getQueryString ());
 		}

@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
+import org.tutske.utils.Bag;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class SocketHandler extends WebSocketHandler {
 			UrlRoute<SocketFunction> route = this.route.get ();
 			SocketFunction function = route.getHandler ();
 
-			ParameterBag path = route.extractMatches (pathstring, pathstring.substring (1).split ("/"));
+			Bag<String, String> path = route.extractMatches (pathstring, pathstring.substring (1).split ("/"));
 			SocketRequest socketRequest = new SocketRequest (request, response, path);
 
 			try {

@@ -1,6 +1,6 @@
 package org.tutske.rest.internals;
 
-import org.tutske.rest.ParameterBag;
+import org.tutske.utils.Bag;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -8,7 +8,7 @@ import java.net.URLDecoder;
 
 public class QueryStringDecoder {
 
-	public static void decodeInto (ParameterBag bag, String querystring) {
+	public static void decodeInto (Bag<String, String> bag, String querystring) {
 		if ( querystring == null || querystring.isEmpty () ) { return; }
 
 		for ( String part : querystring.split ("&") ) {
@@ -24,8 +24,8 @@ public class QueryStringDecoder {
 		}
 	}
 
-	public static ParameterBag decode (String querystring) {
-		ParameterBag bag = new ParameterBag ();
+	public static Bag<String, String> decode (String querystring) {
+		Bag<String, String> bag = new Bag<> ();
 		decodeInto (bag, querystring);
 		return bag;
 	}

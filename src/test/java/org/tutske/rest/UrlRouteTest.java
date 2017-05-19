@@ -6,6 +6,7 @@ import static org.tutske.rest.HttpRequest.Method.*;
 import static org.tutske.rest.UrlRoute.SimpleRoute;
 
 import org.junit.Test;
+import org.tutske.utils.Bag;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -77,6 +78,17 @@ public class UrlRouteTest {
 		Map<String, String> params = route.extractMatches (url, parts);
 
 		assertThat (params, hasEntry ("id", "abc"));
+	}
+
+	@Test
+	public void it_should_extract_identicaly_named_parameters_from_a_url () {
+		String [] parts = new String [] { "actions", "walk", "jump", "turn-around" };
+		String url = "/" + String.join ("/", parts);
+
+		UrlRoute<?> route = new SimpleRoute<> ("actions", "/actions/:action/:action/:action", null);
+		Bag<String, String> params = route.extractMatches (url, parts);
+
+		assertThat (params.getAll ("action"), contains ("walk", "jump", "turn-around"));
 	}
 
 	@Test

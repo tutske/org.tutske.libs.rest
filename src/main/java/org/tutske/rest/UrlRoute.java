@@ -1,5 +1,7 @@
 package org.tutske.rest;
 
+import org.tutske.utils.Bag;
+
 import static org.tutske.rest.HttpRequest.Method;
 
 import java.util.EnumSet;
@@ -91,8 +93,8 @@ public abstract class UrlRoute<T> {
 			return parts.length == 1 && "".equals (parts[1]);
 		}
 
-		@Override public ParameterBag extractMatches (String url, String [] parts) {
-			return new ParameterBag ();
+		@Override public Bag<String, String> extractMatches (String url, String [] parts) {
+			return new Bag<> ();
 		}
 	}
 
@@ -154,8 +156,8 @@ public abstract class UrlRoute<T> {
 			return true;
 		}
 
-		@Override public ParameterBag extractMatches (String url, String [] parts) {
-			ParameterBag extracted = new ParameterBag ();
+		@Override public Bag<String, String> extractMatches (String url, String [] parts) {
+			Bag<String, String> extracted = new Bag<> ();
 			int last = descriptor.length - 1;
 			for ( int i = 0; i < descriptor.length; i++ ) {
 				if ( shouldMatch [i] ) { continue; }
@@ -180,7 +182,7 @@ public abstract class UrlRoute<T> {
 	abstract public String getIdentifier ();
 	abstract public boolean matches (Method method, String url);
 	abstract public boolean matches (Method method, String url, String [] parts);
-	abstract public ParameterBag extractMatches (String url, String [] parts);
+	abstract public Bag<String, String> extractMatches (String url, String [] parts);
 	abstract public T getHandler ();
 	abstract public String linkTo (Map<String, String> params);
 
