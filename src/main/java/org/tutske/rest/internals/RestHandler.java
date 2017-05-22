@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
 import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.ResponseException;
+import org.tutske.utils.Bag;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +58,7 @@ public class RestHandler extends AbstractHandler {
 		int status = HttpServletResponse.SC_OK;
 		RestStructure result;
 		try {
-			ParameterBag data = route.extractMatches (s, s.substring (1).split ("/"));
+			Bag<String, String> data = route.extractMatches (s, s.substring (1).split ("/"));
 			HttpRequest r = new HttpRequest (request, response, data);
 			result = filters.createChain (s, (rr) -> route.getHandler ().apply (rr)).call (r);
 			if ( response.getStatus () != 0 ) {
