@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.tutske.rest.ControllerFunction;
 import org.tutske.rest.Filter;
 import org.tutske.rest.HttpRequest;
+import org.tutske.rest.ThrowingFunction;
 import org.tutske.rest.UrlRoute.SimpleRoute;
 import org.tutske.rest.data.RestObject;
 
@@ -15,7 +16,7 @@ import org.tutske.rest.data.RestObject;
 public class RestFilterTest {
 
 	FilterCollection<HttpRequest, RestObject> filters = new FilterCollection<> ();
-	ControllerFunction destination = mock (ControllerFunction.class);
+	ThrowingFunction<HttpRequest, RestObject> destination = mock (ThrowingFunction.class);
 
 	Filter<HttpRequest, RestObject> passThrough = (request, chain) -> chain.call (request);
 	Filter<HttpRequest, RestObject> shortCircuit = (request, chain) -> null;
@@ -29,7 +30,7 @@ public class RestFilterTest {
 
 	@Test
 	public void it_should_return_a_response_based_on_the_response_from_the_destinaton () throws Exception {
-		ControllerFunction destination = (request) -> new RestObject () {{
+		ThrowingFunction<HttpRequest, RestObject> destination = (request) -> new RestObject () {{
 			v ("key", "value");
 		}};
 
@@ -42,7 +43,7 @@ public class RestFilterTest {
 	@Test
 	public void it_should_return_a_response_based_on_the_response_from_the_destinaton_when_filters_pass_through ()
 	throws Exception {
-		ControllerFunction destination = (request) -> new RestObject () {{
+		ThrowingFunction<HttpRequest, RestObject> destination = (request) -> new RestObject () {{
 			v ("key", "value");
 		}};
 
@@ -59,7 +60,7 @@ public class RestFilterTest {
 
 	@Test
 	public void it_should_return_the_modified_reponse_when_filters_perform_modifcations () throws Exception {
-		ControllerFunction destination = (request) -> new RestObject () {{
+		ThrowingFunction<HttpRequest, RestObject> destination = (request) -> new RestObject () {{
 			v ("key", "value");
 		}};
 		Filter<HttpRequest, RestObject> modifier = (request, chain) -> {
