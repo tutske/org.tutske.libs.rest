@@ -1,7 +1,11 @@
 package org.tutske.rest.internals;
 
+import org.tutske.rest.data.RestRaw;
 import org.tutske.rest.data.RestStructure;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +34,9 @@ public class ContentSerializer {
 		this (Collections.emptyMap ());
 	}
 
-	public String contentType (String accept) {
+	public String contentType (String accept, RestStructure structure) {
+		if ( structure instanceof RestRaw ) { return ((RestRaw) structure).mime (); }
+
 		String favourite = pickFavourite (accept);
 		return extractType (favourite);
 	}
@@ -42,11 +48,22 @@ public class ContentSerializer {
 		return serializers.get (type).serialize (structure, attributes);
 	}
 
-	public void serialize (String accept, RestStructure structure, Writer writer) {
+	public void serialize (String accept, RestStructure structure, OutputStream stream) {
+		if ( structure instanceof RestRaw ) {
+			try { stream.write (((RestRaw) structure).content ()); }
+			catch (IOException e) { throw new RuntimeException (e); }
+			return;
+		}
+
 		String mime = pickFavourite (accept);
 		String type = extractType (mime);
 		Map<String, String> attributes = extractAttributes (mime);
+
+		Writer writer = new OutputStreamWriter (stream);
 		serializers.get (type).serialize (structure, attributes, writer);
+
+		try { writer.flush (); }
+		catch (IOException e) { throw new RuntimeException (e); }
 	}
 
 	private String pickFavourite (String accept) {
