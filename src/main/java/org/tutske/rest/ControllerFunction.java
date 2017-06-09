@@ -1,11 +1,11 @@
 package org.tutske.rest;
 
-import org.tutske.rest.data.RestObject;
+import org.tutske.rest.data.RestStructure;
 
 
 @FunctionalInterface
-public interface ControllerFunction extends ThrowingFunction<HttpRequest, RestObject> {
+public interface ControllerFunction extends ThrowingFunction<HttpRequest, RestStructure> {
 
-	RestObject apply (HttpRequest request) throws Exception;
+	RestStructure apply (HttpRequest request) throws Exception;
 
 }

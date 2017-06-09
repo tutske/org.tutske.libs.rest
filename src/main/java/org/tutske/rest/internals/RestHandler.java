@@ -75,12 +75,12 @@ public class RestHandler extends AbstractHandler {
 		}
 
 		String accept = request.getHeader ("Accept");
-		String contentType = serializer.contentType (accept);
+		String contentType = serializer.contentType (accept, result);
 
 		response.setContentType (contentType);
 		response.setStatus (status);
-		serializer.serialize (accept, result, response.getWriter ());
-		response.getWriter ().flush ();
+		serializer.serialize (accept, result, response.getOutputStream ());
+		response.getOutputStream ().flush ();
 
 		base.setHandled (true);
 	}

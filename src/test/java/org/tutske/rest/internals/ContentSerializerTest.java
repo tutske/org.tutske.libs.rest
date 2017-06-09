@@ -8,8 +8,10 @@ import static org.mockito.Mockito.any;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.tutske.rest.data.RestObject;
+import org.tutske.rest.data.RestRaw;
 import org.tutske.rest.data.RestStructure;
 
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -24,7 +26,7 @@ public class ContentSerializerTest {
 	@Test (expected = RuntimeException.class)
 	public void it_should_complain_when_it_does_not_know_how_to_serialize_to_requested_type () {
 		ContentSerializer serializer = new ContentSerializer (new HashMap<> ());
-		serializer.contentType ("application/json");
+		serializer.contentType ("application/json", null);
 	}
 
 	@Test
@@ -51,10 +53,10 @@ public class ContentSerializerTest {
 			put ("application/json", json);
 		}});
 
-		StringWriter writer = new StringWriter ();
+		ByteArrayOutputStream writer = new ByteArrayOutputStream ();
 		serializer.serialize ("application/json", new RestObject (), writer);
 
-		assertThat (writer.toString (), is ("{}"));
+		assertThat (new String (writer.toByteArray ()), is ("{}"));
 	}
 
 	@Test
@@ -62,20 +64,20 @@ public class ContentSerializerTest {
 		ContentSerializer serializer = new ContentSerializer (new HashMap<String, Serializer> () {{
 			put ("application/json", json);
 		}});
-		String contentType = serializer.contentType ("application/json");
+		String contentType = serializer.contentType ("application/json", null);
 		assertThat (contentType, is ("application/json"));
 	}
 
 	@Test (expected = RuntimeException.class)
 	public void it_should_complain_when_no_accept_header_is_given_and_no_default_is_configured () {
 		ContentSerializer serializer = new ContentSerializer ();
-		serializer.contentType ("");
+		serializer.contentType ("", null);
 	}
 
 	@Test (expected = RuntimeException.class)
 	public void it_should_complain_when_null_accept_header_is_given_and_no_default_is_configured () {
 		ContentSerializer serializer = new ContentSerializer ();
-		serializer.contentType (null);
+		serializer.contentType (null, null);
 	}
 
 	@Test
@@ -83,7 +85,7 @@ public class ContentSerializerTest {
 		ContentSerializer serializer = new ContentSerializer (new HashMap<String, Serializer> () {{
 			put ("application/json", json);
 		}});
-		String contentType = serializer.contentType ("application/json; q=0.2, appliction/xml; q=0.3");
+		String contentType = serializer.contentType ("application/json; q=0.2, appliction/xml; q=0.3", null);
 		assertThat (contentType, is ("application/json"));
 	}
 
@@ -92,7 +94,7 @@ public class ContentSerializerTest {
 		ContentSerializer serializer = new ContentSerializer (new HashMap<String, Serializer> () {{
 			put ("application/xml", xml);
 		}});
-		String contentType = serializer.contentType ("application/json; q=0.2, application/xml; q=0.3");
+		String contentType = serializer.contentType ("application/json; q=0.2, application/xml; q=0.3", null);
 		assertThat (contentType, is ("application/xml"));
 	}
 
@@ -102,7 +104,7 @@ public class ContentSerializerTest {
 			put ("application/xml", xml);
 		}});
 		String accept = "application/json; special=\";=,\", application/xml; q=0.3";
-		String contentType = serializer.contentType (accept);
+		String contentType = serializer.contentType (accept, null);
 		assertThat (contentType, is ("application/xml"));
 	}
 
@@ -175,7 +177,7 @@ public class ContentSerializerTest {
 	}
 
 	@Test
-	public void it_should_call_the_rigth_serializer_when_serializing_to_a_string () {
+	public void it_should_call_the_right_serializer_when_serializing_to_a_string () {
 		Serializer jsonp = mock (Serializer.class);
 		ContentSerializer serializer = new ContentSerializer (new HashMap<String, Serializer> () {{
 			put ("application/json", json);
@@ -188,7 +190,7 @@ public class ContentSerializerTest {
 	}
 
 	@Test
-	public void it_should_call_the_rigth_serializer_when_serializing_to_a_writer () {
+	public void it_should_call_the_right_serializer_when_serializing_to_a_writer () {
 		Serializer jsonp = mock (Serializer.class);
 		ContentSerializer serializer = new ContentSerializer (new HashMap<String, Serializer> () {{
 			put ("application/json", json);
@@ -196,8 +198,19 @@ public class ContentSerializerTest {
 			put ("application/javascript", jsonp);
 		}});
 
-		serializer.serialize ("application/javascript", new RestObject (), new StringWriter ());
+		serializer.serialize ("application/javascript", new RestObject (), new ByteArrayOutputStream ());
 		verify (jsonp).serialize (any (RestStructure.class), any (Map.class), any (Writer.class));
+	}
+
+	@Test
+	public void it_should_serialize_raw_rest_responses_as_their_bytes () {
+		ContentSerializer serializer = new ContentSerializer (new HashMap<> ());
+		RestRaw structure = new RestRaw ("application/octet-stream", "The raw content".getBytes ());
+		ByteArrayOutputStream stream = new ByteArrayOutputStream ();
+
+		serializer.serialize (structure.mime (), structure, stream);
+
+		assertThat (new String (stream.toByteArray ()), is ("The raw content"));
 	}
 
 }
