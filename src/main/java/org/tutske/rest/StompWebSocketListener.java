@@ -1,12 +1,11 @@
 package org.tutske.rest;
 
-import org.eclipse.jetty.io.RuntimeIOException;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.tutske.util.stomp.StompFrame;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.concurrent.Future;
 
 
 public abstract class StompWebSocketListener extends WebSocketAdapter implements WebSocketListener {
@@ -24,9 +23,8 @@ public abstract class StompWebSocketListener extends WebSocketAdapter implements
 		onWebSocketBinary (data, 0, data.length);
 	}
 
-	public void sendFrame (StompFrame frame) {
-		try { getRemote ().sendBytes (ByteBuffer.wrap (frame.raw ())); }
-		catch (IOException e) { throw new RuntimeIOException (e); }
+	public Future<Void> sendFrame (StompFrame frame) {
+		return getRemote ().sendBytesByFuture (ByteBuffer.wrap (frame.raw ()));
 	}
 
 }
