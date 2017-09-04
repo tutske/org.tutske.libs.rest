@@ -17,6 +17,8 @@ import org.tutske.rest.internals.*;
 
 import java.security.KeyStore;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,6 +30,7 @@ public class Server {
 	private Handler resources = null;
 	private Handler sockets = null;
 
+	private List<Handler> handlers = new LinkedList<> ();
 	private UrlRouter<ControllerFunction> router = null;
 	private FilterCollection<HttpRequest, RestStructure> filters = null;
 	private Map<String, Serializer> serializers = null;
@@ -61,6 +64,11 @@ public class Server {
 
 		server.addConnector (sslConnector);
 
+		return this;
+	}
+
+	public Server configureHandlers (List<Handler> handlers) {
+		this.handlers = handlers;
 		return this;
 	}
 
@@ -118,6 +126,7 @@ public class Server {
 		ContentSerializer serializer = new ContentSerializer (defaultSerializer, serializers);
 
 		HandlerList handlers = new HandlerList ();
+
 		if ( resources != null ) {
 			handlers.addHandler (resources);
 		}
@@ -130,6 +139,8 @@ public class Server {
 		if ( sockets != null ) {
 			handlers.addHandler (sockets);
 		}
+
+		this.handlers.forEach (handlers::addHandler);
 		handlers.addHandler (new NotFoundHandler (serializers));
 
 		server.setHandler (handlers);
