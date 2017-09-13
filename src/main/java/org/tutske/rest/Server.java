@@ -1,6 +1,7 @@
 package org.tutske.rest;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -26,16 +27,11 @@ public class Server {
 
 	private final org.eclipse.jetty.server.Server server;
 	private final String baseurl;
+	private List<HandlerConfig> handlers = new LinkedList<> ();
 
-	private Handler resources = null;
-	private Handler sockets = null;
-
-	private List<Handler> handlers = new LinkedList<> ();
-	private UrlRouter<ControllerFunction> router = null;
-	private FilterCollection<HttpRequest, RestStructure> filters = null;
-	private Map<String, Serializer> serializers = null;
-	private String defaultSerializer = null;
-	private Gson gson = new Gson ();
+	private Map<String, Serializer> serializers;
+	private String preferred;
+	private Gson gson;
 
 	public Server (String baseurl, int port) {
 		this.server = new org.eclipse.jetty.server.Server (port);
@@ -67,45 +63,50 @@ public class Server {
 		return this;
 	}
 
-	public Server configureHandlers (List<Handler> handlers) {
-		this.handlers = handlers;
+	public Server configureHandlers (Handler ... handlers) {
+		for ( Handler handler : handlers ) {
+			this.handlers.add (new WrappedHandlerConfig (handler));
+		}
 		return this;
 	}
 
 	public Server configureRoutes (UrlRouter<ControllerFunction> router) {
-		this.router = router;
+		return configureRoutes (router, new FilterCollection<> ());
+	}
+
+	public Server configureRoutes (UrlRouter<ControllerFunction> router, FilterCollection<HttpRequest, RestStructure> filters) {
+		return configureRoutes (router, filters, null);
+	}
+
+	public Server configureRoutes (
+		UrlRouter<ControllerFunction> router,
+		FilterCollection<HttpRequest, RestStructure> filters,
+		ContentSerializer serializer
+	) {
+		this.handlers.add (new ApiHandlerConfig (router, filters, serializer));
 		return this;
 	}
 
 	public Server configureSocketRoutes (UrlRouter<SocketFunction> router) {
-		sockets = new SocketHandler (router);
-		return this;
-	}
-
-	public Server configureFilters (FilterCollection<HttpRequest, RestStructure> filters) {
-		this.filters = filters;
-		return this;
-	}
-
-	public Server configureSerializers (String defaultSerializer, Map<String, Serializer> serializers) {
-		this.defaultSerializer = defaultSerializer;
-		this.serializers = serializers;
-		return this;
+		this.handlers.add (new SocketHandlerConfig (router));
+		return this ;
 	}
 
 	public Server configureStaticContent (String path) {
-		String externalform = this.getClass ().getClassLoader ()
-			.getResource (path).toExternalForm ();
-
+		String externalform = this.getClass ().getClassLoader ().getResource (path).toExternalForm ();
 		ResourceHandler resources = new ResourceHandler ();
 		resources.setResourceBase (externalform);
-		this.resources = resources;
-
-		return this;
+		return configureHandlers (resources);
 	}
 
 	public Server configureGson (Gson gson) {
 		this.gson = gson;
+		return this;
+	}
+
+	public Server configureSerializers (Map<String, Serializer> serializers, String preferred) {
+		this.serializers = serializers;
+		this.preferred = preferred;
 		return this;
 	}
 
@@ -117,31 +118,17 @@ public class Server {
 	public void startAsync () throws Exception {
 		ResponseException.configureBaseUrl (baseurl);
 
-		if ( serializers == null ) {
-			serializers = defaultSerializers ();
-		}
-		if ( defaultSerializer == null ) {
-			defaultSerializer = "application/json";
-		}
-		ContentSerializer serializer = new ContentSerializer (defaultSerializer, serializers);
+		if ( gson == null ) { gson = new GsonBuilder ().create (); }
+		if ( serializers == null ) { serializers = defaultSerializers (); }
+		if ( preferred == null ) { preferred = "application/json"; }
 
 		HandlerList handlers = new HandlerList ();
 
-		if ( resources != null ) {
-			handlers.addHandler (resources);
-		}
-		if ( router != null && filters != null ) {
-			handlers.addHandler (new RestHandler (router, filters, serializer));
-		}
-		if ( router != null && filters == null ) {
-			handlers.addHandler (new RestHandler (router, serializer));
-		}
-		if ( sockets != null ) {
-			handlers.addHandler (sockets);
-		}
-
-		this.handlers.forEach (handlers::addHandler);
-		handlers.addHandler (new NotFoundHandler (serializers));
+		this.handlers.forEach (config -> {
+			Handler handler = config.createHandler (gson, serializers, preferred);
+			handlers.addHandler (handler);
+		});
+		handlers.addHandler (new NotFoundHandler (defaultSerializers ()));
 
 		server.setHandler (handlers);
 		server.start ();
@@ -160,6 +147,55 @@ public class Server {
 		serializers.put ("default", serializers.get ("application/json"));
 
 		return serializers;
+	}
+
+	private interface HandlerConfig {
+		Handler createHandler (Gson gson, Map<String, Serializer> serializers, String prefered);
+	}
+
+	private static class ApiHandlerConfig implements HandlerConfig {
+		private final UrlRouter<ControllerFunction> router;
+		private final FilterCollection<HttpRequest, RestStructure> filters;
+		private final ContentSerializer serializers;
+
+		public ApiHandlerConfig (
+			UrlRouter<ControllerFunction> router,
+			FilterCollection<HttpRequest, RestStructure> filters,
+			ContentSerializer serializers
+		) {
+			this.router = router;
+			this.filters = filters;
+			this.serializers = serializers;
+		}
+
+		@Override public Handler createHandler (Gson gson, Map<String, Serializer> serializers, String prefered) {
+			ContentSerializer s = this.serializers == null ? new ContentSerializer (prefered, serializers) : this.serializers;
+			return new RestHandler (router, filters, s);
+		}
+	}
+
+	private static class SocketHandlerConfig implements HandlerConfig {
+		private final UrlRouter<SocketFunction> router;
+
+		public SocketHandlerConfig (UrlRouter<SocketFunction> router) {
+			this.router = router;
+		}
+
+		@Override public Handler createHandler (Gson gson, Map<String, Serializer> serializers, String prefered) {
+			return new SocketHandler (router);
+		}
+	}
+
+	private static class WrappedHandlerConfig implements HandlerConfig {
+		private final Handler handler;
+
+		public WrappedHandlerConfig (Handler handler) {
+			this.handler = handler;
+		}
+
+		@Override public Handler createHandler (Gson gson, Map<String, Serializer> serializers, String prefered) {
+			return handler;
+		}
 	}
 
 }
