@@ -51,9 +51,7 @@ public class RestHandler extends AbstractHandler {
 		Method method = Method.valueOf (request.getMethod ());
 		UrlRoute<ControllerFunction> route = router.route (method, s);
 
-		if ( route == null ) {
-			return;
-		}
+		if ( route == null ) { return; }
 
 		int status = HttpServletResponse.SC_OK;
 		RestStructure result;
