@@ -2,8 +2,8 @@ package org.tutske.rest.util;
 
 import static org.mockito.Mockito.*;
 
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
-import org.tutske.rest.internals.RestHandler;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -33,7 +33,7 @@ public class RoundTrip {
 		when (response.getOutputStream ()).thenReturn (_stream);
 	}
 
-	public void get (RestHandler handler, String url) throws Exception {
+	public void get (Handler handler, String url) throws Exception {
 		when (request.getMethod ()).thenReturn ("GET");
 		handler.handle (url, base, request, response);
 	}

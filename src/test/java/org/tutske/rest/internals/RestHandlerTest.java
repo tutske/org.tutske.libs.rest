@@ -6,6 +6,7 @@ import static org.mockito.Matchers.intThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import org.eclipse.jetty.server.Handler;
 import org.junit.Before;
 import org.junit.Test;
 import org.tutske.rest.ControllerFunction;
@@ -87,14 +88,16 @@ public class RestHandlerTest {
 
 	@Test
 	public void it_should_return_an_error_code_when_a_response_exception_is_thrown () throws Exception {
-		handler = new RestHandler (router);
+		Handler handler = new ErrorAwareHandlerList (new RestHandler (router));
+		handler.start ();
 		trip.get (handler, "/fail");
 		verify (trip.response).setStatus (codeRange (400));
 	}
 
 	@Test
 	public void it_should_return_an_error_code_when_a_different_exception_is_thrown () throws Exception {
-		handler = new RestHandler (router);
+		Handler handler = new ErrorAwareHandlerList (new RestHandler (router));
+		handler.start ();
 		trip.get (handler, "/hard-fail");
 		verify (trip.response).setStatus (codeRange (500));
 	}

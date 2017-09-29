@@ -122,7 +122,7 @@ public class Server {
 		if ( serializers == null ) { serializers = defaultSerializers (); }
 		if ( preferred == null ) { preferred = "application/json"; }
 
-		HandlerList handlers = new HandlerList ();
+		HandlerList handlers = new ErrorAwareHandlerList (new ContentSerializer (preferred, serializers));
 
 		this.handlers.forEach (config -> {
 			Handler handler = config.createHandler (gson, serializers, preferred);
