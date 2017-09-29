@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
 import org.tutske.rest.data.RestStructure;
-import org.tutske.rest.exceptions.ResponseException;
 import org.tutske.utils.Bag;
 
 import javax.servlet.ServletException;
@@ -18,8 +17,6 @@ import java.io.IOException;
 
 
 public class RestHandler extends AbstractHandler {
-
-	private final static Logger logger = LoggerFactory.getLogger (RestHandler.class);
 
 	private final UrlRouter<ControllerFunction> router;
 	private final FilterCollection<HttpRequest, RestStructure> filters;
@@ -53,24 +50,15 @@ public class RestHandler extends AbstractHandler {
 
 		if ( route == null ) { return; }
 
-		int status = HttpServletResponse.SC_OK;
+		Bag<String, String> data = route.extractMatches (s, s.substring (1).split ("/"));
+		HttpRequest r = new HttpRequest (request, response, data);
+
 		RestStructure result;
-		try {
-			Bag<String, String> data = route.extractMatches (s, s.substring (1).split ("/"));
-			HttpRequest r = new HttpRequest (request, response, data);
-			result = filters.createChain (s, (rr) -> route.getHandler ().apply (rr)).call (r);
-			if ( response.getStatus () != 0 ) {
-				status = response.getStatus ();
-			}
-		} catch (ResponseException exception) {
-			result = exception.asRestStructure ();
-			status = exception.getStatusCode ();
-		} catch (Exception exception) {
-			logger.warn ("Failed to perform request", exception);
-			String msg = exception.getMessage ();
-			result = new ResponseException (msg == null ? "" : msg).asRestStructure ();
-			status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-		}
+		try { result = filters.createChain (s, (rr) -> route.getHandler ().apply (rr)).call (r); }
+		catch ( RuntimeException e ) { throw e; }
+		catch ( Exception e ) { throw new RuntimeException (e); }
+
+		int status = response.getStatus () == 0 ? HttpServletResponse.SC_OK : response.getStatus ();
 
 		String accept = request.getHeader ("Accept");
 		String contentType = serializer.contentType (accept, result);
