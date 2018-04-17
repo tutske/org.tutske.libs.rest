@@ -163,6 +163,10 @@ public class Server {
 			FilterCollection<HttpRequest, RestStructure> filters,
 			ContentSerializer serializers
 		) {
+			if ( router == null ) {
+				throw new NullPointerException ("Routes for api can not bu null");
+			}
+
 			this.router = router;
 			this.filters = filters;
 			this.serializers = serializers;
