@@ -13,7 +13,7 @@ import java.util.*;
 public class HttpRequest {
 
 	public enum Method {
-		HEAD, OPTIONS, GET, POST, PUT, DELETE, TRACE
+		HEAD, OPTION, GET, POST, PUT, DELETE, TRACE
 	}
 
 	private final Bag<String, Object> context = new Bag<> ();
