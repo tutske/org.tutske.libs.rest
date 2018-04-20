@@ -13,7 +13,11 @@ import java.util.*;
 public class HttpRequest {
 
 	public enum Method {
-		HEAD, OPTION, GET, POST, PUT, DELETE, TRACE
+		CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE, UNKNOWN;
+		public static Method of (String value) {
+			try { return Method.valueOf (value.toUpperCase ()); }
+			catch ( IllegalArgumentException e ) { return UNKNOWN; }
+		}
 	}
 
 	private final Bag<String, Object> context = new Bag<> ();
@@ -38,7 +42,7 @@ public class HttpRequest {
 	}
 
 	public Method getMethod () {
-		return Method.valueOf (request.getMethod ());
+		return Method.of (request.getMethod ());
 	}
 
 	public String getHeader (String header) {

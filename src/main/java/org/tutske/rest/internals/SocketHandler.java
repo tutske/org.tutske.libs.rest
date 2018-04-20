@@ -49,7 +49,7 @@ public class SocketHandler extends WebSocketHandler {
 	@Override
 	public void handle (String s, Request base, HttpServletRequest request, HttpServletResponse response)
 	throws IOException, ServletException {
-		Method method = Method.valueOf (base.getMethod ());
+		Method method = Method.of (base.getMethod ());
 		UrlRoute<SocketFunction> route = router.route (method, s);
 
 		if ( route == null ) { return; }

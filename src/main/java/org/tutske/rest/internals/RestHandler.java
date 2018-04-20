@@ -45,7 +45,7 @@ public class RestHandler extends AbstractHandler {
 	@Override
 	public void handle (String s, Request base, HttpServletRequest request, HttpServletResponse response)
 	throws IOException, ServletException {
-		Method method = Method.valueOf (request.getMethod ());
+		Method method = Method.of (request.getMethod ());
 		UrlRoute<ControllerFunction> route = router.route (method, s);
 
 		if ( route == null ) { return; }
