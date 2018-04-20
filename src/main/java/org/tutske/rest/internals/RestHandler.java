@@ -59,9 +59,10 @@ public class RestHandler extends AbstractHandler {
 		catch ( Exception e ) { throw new RuntimeException (e); }
 
 		int status = response.getStatus () == 0 ? HttpServletResponse.SC_OK : response.getStatus ();
+		String contentType = response.getContentType ();
 
-		String accept = request.getHeader ("Accept");
-		String contentType = serializer.contentType (accept, result);
+		String accept = contentType != null ? contentType : request.getHeader ("Accept");
+		contentType = serializer.contentType (accept, result);
 
 		response.setContentType (contentType);
 		response.setStatus (status);
