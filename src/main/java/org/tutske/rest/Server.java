@@ -35,7 +35,7 @@ public class Server {
 
 	public Server (String baseurl, int port) {
 		this.server = new org.eclipse.jetty.server.Server (port);
-		this.baseurl = baseurl;
+		this.baseurl = baseurl.endsWith ("/") ? baseurl.substring (0, baseurl.length () - 1) : baseurl;
 	}
 
 	public Server configureSsl (int port, KeyStore keys, KeyStore trusted, String password) {
