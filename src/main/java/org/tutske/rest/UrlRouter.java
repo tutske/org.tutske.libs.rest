@@ -2,6 +2,8 @@ package org.tutske.rest;
 
 import static org.tutske.rest.HttpRequest.Method;
 
+import org.tutske.rest.routes.UrlRoute;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;

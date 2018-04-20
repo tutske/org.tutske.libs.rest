@@ -3,7 +3,7 @@ package org.tutske.rest.internals;
 import org.tutske.rest.Filter;
 import org.tutske.rest.HttpRequest.Method;
 import org.tutske.rest.ThrowingFunction;
-import org.tutske.rest.UrlRoute;
+import org.tutske.rest.routes.UrlRoute;
 
 import java.util.Collections;
 import java.util.LinkedList;

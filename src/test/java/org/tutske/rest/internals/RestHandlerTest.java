@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tutske.rest.ControllerFunction;
 import org.tutske.rest.HttpRequest;
-import org.tutske.rest.UrlRoute.ControllerRoute;
+import org.tutske.rest.routes.ControllerRoute;
 import org.tutske.rest.UrlRouter;
 import org.tutske.rest.data.RestObject;
 import org.tutske.rest.exceptions.ResponseException;

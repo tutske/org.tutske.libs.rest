@@ -5,7 +5,8 @@ import static org.hamcrest.Matchers.*;
 import static org.tutske.rest.HttpRequest.Method.GET;
 
 import org.junit.Test;
-import org.tutske.rest.UrlRoute.SimpleRoute;
+import org.tutske.rest.routes.UrlRoute;
+import org.tutske.rest.routes.SimpleRoute;
 
 
 public class UrlRouterTest {

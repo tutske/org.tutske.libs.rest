@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
+import org.tutske.rest.routes.UrlRoute;
 import org.tutske.utils.Bag;
 
 import javax.servlet.ServletException;

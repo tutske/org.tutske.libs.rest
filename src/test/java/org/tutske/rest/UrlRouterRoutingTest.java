@@ -3,12 +3,12 @@ package org.tutske.rest;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.tutske.rest.HttpRequest.Method.GET;
-import static org.tutske.rest.UrlRoute.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.tutske.rest.routes.SimpleRoute;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.tutske.rest.*;
 import org.tutske.rest.data.RestStructure;
+import org.tutske.rest.routes.UrlRoute;
 import org.tutske.utils.Bag;
 
 import javax.servlet.ServletException;
