@@ -1,7 +1,6 @@
 package org.tutske.rest.exceptions;
 
 import org.tutske.rest.data.RestObject;
-import org.tutske.rest.jwt.JsonWebToken;
 
 import javax.servlet.http.HttpServletResponse;
 

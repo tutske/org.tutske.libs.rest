@@ -4,8 +4,6 @@ import static org.tutske.rest.HttpRequest.Method;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tutske.rest.*;
 import org.tutske.rest.data.RestStructure;
 import org.tutske.utils.Bag;
