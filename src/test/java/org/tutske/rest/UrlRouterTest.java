@@ -32,7 +32,22 @@ public class UrlRouterTest {
 			new SimpleRoute ("all groups", "/groups", null)
 		);
 
-		assertThat (router.route (GET, "/users/abc"), is (router.find ("one user")));
+		assertThat (router.route (GET, "/users/abc"), is ("one user"));
+	}
+
+	@Test
+	public void it_should_find_the_right_route () {
+		UrlRouter router = new UrlRouter ();
+		UrlRoute one_user = new SimpleRoute ("one user", "/users/:id", null);
+
+		router.add (
+			new SimpleRoute ("all users", "/users", null),
+			one_user,
+			new SimpleRoute ("user groups", "/users/:id/groups", null),
+			new SimpleRoute ("all groups", "/groups", null)
+		);
+
+		assertThat (router.find ("one user"), is (one_user));
 	}
 
 }

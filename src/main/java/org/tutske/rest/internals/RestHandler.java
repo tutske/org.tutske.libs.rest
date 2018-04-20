@@ -44,15 +44,17 @@ public class RestHandler extends AbstractHandler {
 	public void handle (String s, Request base, HttpServletRequest request, HttpServletResponse response)
 	throws IOException, ServletException {
 		Method method = Method.of (request.getMethod ());
-		UrlRoute<ControllerFunction> route = router.route (method, s);
+		String identifier = router.route (method, s);
+		UrlRoute<ControllerFunction> route = router.find (identifier);
 
 		if ( route == null ) { return; }
 
-		Bag<String, String> data = route.extractMatches (s, s.substring (1).split ("/"));
+		ControllerFunction fn = route.getHandler (identifier);
+		Bag<String, String> data = route.extractMatches (identifier, s, s.substring (1).split ("/"));
 		HttpRequest r = new HttpRequest (request, response, data);
 
 		RestStructure result;
-		try { result = filters.createChain (s, (rr) -> route.getHandler ().apply (rr)).call (r); }
+		try { result = filters.createChain (s, fn).call (r); }
 		catch ( RuntimeException e ) { throw e; }
 		catch ( Exception e ) { throw new RuntimeException (e); }
 

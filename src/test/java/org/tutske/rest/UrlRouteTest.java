@@ -5,6 +5,9 @@ import static org.hamcrest.Matchers.*;
 import static org.tutske.rest.HttpRequest.Method.*;
 import static org.tutske.rest.UrlRoute.SimpleRoute;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.tutske.utils.Bag;
 
@@ -18,55 +21,55 @@ public class UrlRouteTest {
 	@Test
 	public void it_should_match_the_specified_urls () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", null);
-		assertThat (route.matches (GET, "/users/abc"), is (true));
+		assertThat (route, routesTo (GET, "/users/abc"));
 	}
 
 	@Test
 	public void it_should_match_the_specified_urls_with_trailing_slash () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", null);
-		assertThat (route.matches (GET, "/users/abc/"), is (true));
+		assertThat (route, routesTo (GET, "/users/abc/"));
 	}
 
 	@Test
 	public void it_should_match_with_or_without_a_trailing_slach () {
 		UrlRoute<?> route = new SimpleRoute<> ("user", "/users/:id", null);
-		assertThat (route.matches (GET, "/users/abc/"), is (true));
+		assertThat (route, routesTo (GET, "/users/abc/"));
 	}
 
 	@Test
 	public void it_should_match_urls_with_the_right_http_methods () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", EnumSet.of (POST), null);
-		assertThat (route.matches (POST, "/users/abc/"), is (true));
+		assertThat (route, routesTo (POST, "/users/abc/"));
 	}
 
 	@Test
 	public void it_should_only_match_urls_with_the_right_http_methods () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", EnumSet.of (POST), null);
-		assertThat (route.matches (GET, "/users/abc/"), is (false));
+		assertThat (route, not (routesTo (GET, "/users/abc/")));
 	}
 
 	@Test
 	public void it_should_match_urls_with_any_of_the_right_http_methods () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", EnumSet.of (POST, PUT), null);
-		assertThat (route.matches (POST, "/users/abc/"), is (true));
-		assertThat (route.matches (PUT, "/users/abc/"), is (true));
+		assertThat (route, routesTo (POST, "/users/abc/"));
+		assertThat (route, routesTo (PUT, "/users/abc/"));
 	}
 
 	@Test
 	public void it_should_match_only_urls_with_any_of_the_right_http_methods () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", EnumSet.of (POST, PUT), null);
-		assertThat (route.matches (GET, "/users/abc/"), is (false));
-		assertThat (route.matches (HEAD, "/users/abc/"), is (false));
+		assertThat (route, not (routesTo (GET, "/users/abc/")));
+		assertThat (route, not (routesTo (HEAD, "/users/abc/")));
 	}
 
 	@Test
 	public void it_should_only_match_urls_with_the_right_number_of_parts () {
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", null);
 
-		assertThat (route.matches (GET, "/users"), is (false));
-		assertThat (route.matches (GET, "/users/"), is (false));
-		assertThat (route.matches (GET, "/users/3/update"), is (false));
-		assertThat (route.matches (GET, "/users/3/update/"), is (false));
+		assertThat (route, not (routesTo (GET, "/users")));
+		assertThat (route, not (routesTo (GET, "/users/")));
+		assertThat (route, not (routesTo (GET, "/users/3/update")));
+		assertThat (route, not (routesTo (GET, "/users/3/update/")));
 	}
 
 	@Test
@@ -75,7 +78,7 @@ public class UrlRouteTest {
 		String url = "/" + String.join ("/", parts);
 
 		UrlRoute<?> route = new SimpleRoute<> ("users", "/users/:id", null);
-		Map<String, String> params = route.extractMatches (url, parts);
+		Map<String, String> params = route.extractMatches ("users", url, parts);
 
 		assertThat (params, hasEntry ("id", "abc"));
 	}
@@ -86,7 +89,7 @@ public class UrlRouteTest {
 		String url = "/" + String.join ("/", parts);
 
 		UrlRoute<?> route = new SimpleRoute<> ("actions", "/actions/:action/:action/:action", null);
-		Bag<String, String> params = route.extractMatches (url, parts);
+		Bag<String, String> params = route.extractMatches ("actions", url, parts);
 
 		assertThat (params.getAll ("action"), contains ("walk", "jump", "turn-around"));
 	}
@@ -97,7 +100,7 @@ public class UrlRouteTest {
 		String url = "/" + String.join ("/", parts);
 
 		UrlRoute<Object> route = new SimpleRoute<> ("page", "/books/:title/:chapter/:page", null);
-		Map<String, String> params = route.extractMatches (url, parts);
+		Map<String, String> params = route.extractMatches ("page", url, parts);
 
 		assertThat (params, hasEntry ("title", "The_book_of_love"));
 		assertThat (params, hasEntry ("chapter", "CH_1"));
@@ -116,25 +119,25 @@ public class UrlRouteTest {
 		Map<String, String> params = new HashMap<> ();
 		params.put ("id", "abc");
 
-		assertThat (route.linkTo (params), containsString ("/users/abc"));
+		assertThat (route.linkTo ("id", params), containsString ("/users/abc"));
 	}
 
 	@Test
 	public void it_should_match_url_with_trailing_path_paths () {
 		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
-		assertThat (route.matches (GET, "/files/with/long/path/to/file.ext"), is (true));
+		assertThat (route, routesTo (GET, "/files/with/long/path/to/file.ext"));
 	}
 
 	@Test
 	public void it_shouldSmatch_url_with_trailing_empty_paths () {
 		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
-		assertThat (route.matches (GET, "/files"), is (true));
+		assertThat (route, routesTo (GET, "/files"));
 	}
 
 	@Test
 	public void it_should_match_url_with_trailing_empty_paths_with_trailing_slash () {
 		UrlRoute<?> route = new SimpleRoute<> ("", "/files/::path", null);
-		assertThat (route.matches (GET, "/files/"), is (true));
+		assertThat (route, routesTo (GET, "/files/"));
 	}
 
 	@Test
@@ -143,7 +146,7 @@ public class UrlRouteTest {
 		String url = "/files/with/long/path/to/file.ext";
 		String [] parts = url.substring (1).split ("/");
 
-		Map<String, String> params = route.extractMatches (url, parts);
+		Map<String, String> params = route.extractMatches ("", url, parts);
 		System.out.println (params);
 
 		assertThat (params, hasKey ("path"));
@@ -151,5 +154,30 @@ public class UrlRouteTest {
 	}
 
 	// Distinguish between get, post, put, ... request.
+
+	private static Matcher<UrlRoute<?>> routesTo (HttpRequest.Method method, String url) {
+		return new RoutesToMatcher (method, url);
+	}
+
+	private static class RoutesToMatcher extends BaseMatcher<UrlRoute<?>> {
+		private final HttpRequest.Method method;
+		private final String url;
+
+		public RoutesToMatcher (HttpRequest.Method method, String url) {
+			this.method = method;
+			this.url = url;
+		}
+
+		@Override public boolean matches (Object item) {
+			if ( ! (item instanceof UrlRoute) ) { return false; }
+			UrlRoute<?> route = (UrlRoute<?>) item;
+			return route.toId (method, url, url.substring (1).split ("/")) != null;
+		}
+
+		@Override
+		public void describeTo (Description description) {
+			description.appendText ("a route that matches on the url (" + method + ") " + url);
+		}
+	}
 
 }

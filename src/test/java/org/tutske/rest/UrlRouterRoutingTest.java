@@ -56,7 +56,7 @@ public class UrlRouterRoutingTest {
 
 	@Test
 	public void it_should_route_to_the_right_url_route () {
-		assertThat (router.route (GET, url), is (router.find (identifier)));
+		assertThat (router.route (GET, url), is (identifier));
 	}
 
 }

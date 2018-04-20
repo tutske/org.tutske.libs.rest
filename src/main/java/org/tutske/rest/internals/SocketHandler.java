@@ -25,16 +25,17 @@ public class SocketHandler extends WebSocketHandler {
 		this.router = router;
 	}
 
-	private final ThreadLocal<UrlRoute<SocketFunction>> route = new ThreadLocal<> ();
+	private final ThreadLocal<String> identifier = new ThreadLocal<> ();
 
 	@Override
 	public void configure (WebSocketServletFactory factory) {
 		factory.setCreator ((request, response) -> {
-			String pathstring = request.getHttpServletRequest ().getRequestURI ();
-			UrlRoute<SocketFunction> route = this.route.get ();
-			SocketFunction function = route.getHandler ();
+			String p = request.getHttpServletRequest ().getRequestURI ();
+			String identifier = this.identifier.get ();
+			UrlRoute<SocketFunction> route = router.find (identifier);
+			SocketFunction function = route.getHandler (identifier);
 
-			Bag<String, String> path = route.extractMatches (pathstring, pathstring.substring (1).split ("/"));
+			Bag<String, String> path = route.extractMatches (identifier, p, p.substring (1).split ("/"));
 			SocketRequest socketRequest = new SocketRequest (request, response, path);
 
 			try {
@@ -50,11 +51,13 @@ public class SocketHandler extends WebSocketHandler {
 	public void handle (String s, Request base, HttpServletRequest request, HttpServletResponse response)
 	throws IOException, ServletException {
 		Method method = Method.of (base.getMethod ());
-		UrlRoute<SocketFunction> route = router.route (method, s);
+		String identifier = router.route (method, s);
+		UrlRoute<SocketFunction> route = router.find (identifier);
 
 		if ( route == null ) { return; }
 
-		this.route.set (route);
+		this.identifier.set (identifier);
+
 		super.handle (s, base, request, response);
 	}
 

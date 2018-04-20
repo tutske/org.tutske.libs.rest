@@ -18,9 +18,8 @@ public class FilterCollection<S, T> {
 		List<Filter<S, T>> filters = new LinkedList<> ();
 		String [] parts = url.substring (1).split ("/");
 		for ( UrlRoute<Filter<S, T>> route : routes ) {
-			if ( route.matches (Method.GET, url, parts) ) {
-				filters.add (route.getHandler ());
-			}
+			String id = route.toId (Method.GET, url, parts);
+			if ( id != null ) { filters.add (route.getHandler (id)); }
 		}
 		return new Chain<> (destination, filters);
 	}

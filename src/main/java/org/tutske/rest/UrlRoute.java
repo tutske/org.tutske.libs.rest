@@ -4,7 +4,9 @@ import org.tutske.utils.Bag;
 
 import static org.tutske.rest.HttpRequest.Method;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 
@@ -56,19 +58,15 @@ public abstract class UrlRoute<T> {
 			processDescriptor ();
 		}
 
-		@Override public String getIdentifier () {
-			return identifier;
+		@Override public List<String> getIdentifiers () {
+			return Collections.singletonList (identifier);
 		}
 
-		@Override public T getHandler () {
+		@Override public T getHandler (String identifier) {
 			return handler;
 		}
 
-		@Override public boolean matches (Method method, String url) {
-			return matches (method, url, url.substring (1).split ("/"));
-		}
-
-		@Override public String linkTo (Map<String, String> params) {
+		@Override public String linkTo (String id, Map<String, String> params) {
 			String [] constructed = new String [descriptor.length];
 			for ( int i = 0; i < descriptor.length; i++ ) {
 				String part = descriptor[i];
@@ -89,11 +87,11 @@ public abstract class UrlRoute<T> {
 			super ("root", "ROOT", handler);
 		}
 
-		@Override public boolean matches (Method method, String url, String [] parts) {
-			return parts.length == 1 && "".equals (parts[1]);
+		@Override public String toId (Method method, String url, String [] parts) {
+			return parts.length == 1 && "".equals (parts[1]) ? identifier : null;
 		}
 
-		@Override public Bag<String, String> extractMatches (String url, String [] parts) {
+		@Override public Bag<String, String> extractMatches (String identifier, String url, String [] parts) {
 			return new Bag<> ();
 		}
 	}
@@ -143,20 +141,20 @@ public abstract class UrlRoute<T> {
 			super (identifier, descriptor, methods, handler);
 		}
 
-		@Override public boolean matches (Method method, String url, String [] parts) {
-			if ( ! methods.contains (method) ) { return false; }
-			if ( ! this.allowTail && parts.length != this.descriptor.length ) { return false; }
+		@Override public String toId (Method method, String url, String [] parts) {
+			if ( ! methods.contains (method) ) { return null; }
+			if ( ! this.allowTail && parts.length != this.descriptor.length ) { return null; }
 
 			for ( int i = 0; i < descriptor.length; i++ ) {
 				if ( shouldMatch[i] && ! descriptor[i].equals (parts[i]) ) {
-					return false;
+					return null;
 				}
 			}
 
-			return true;
+			return identifier;
 		}
 
-		@Override public Bag<String, String> extractMatches (String url, String [] parts) {
+		@Override public Bag<String, String> extractMatches (String identifier, String url, String [] parts) {
 			Bag<String, String> extracted = new Bag<> ();
 			int last = descriptor.length - 1;
 			for ( int i = 0; i < descriptor.length; i++ ) {
@@ -179,11 +177,10 @@ public abstract class UrlRoute<T> {
 		}
 	}
 
-	abstract public String getIdentifier ();
-	abstract public boolean matches (Method method, String url);
-	abstract public boolean matches (Method method, String url, String [] parts);
-	abstract public Bag<String, String> extractMatches (String url, String [] parts);
-	abstract public T getHandler ();
-	abstract public String linkTo (Map<String, String> params);
+	abstract public List<String> getIdentifiers ();
+	abstract public String toId (Method method, String url, String [] parts);
+	abstract public Bag<String, String> extractMatches (String identifier, String url, String [] parts);
+	abstract public T getHandler (String identifier);
+	abstract public String linkTo (String identifier, Map<String, String> params);
 
 }

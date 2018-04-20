@@ -25,9 +25,9 @@ public class UrlFilterTest {
 		put ("application/json", new JsonSerializer ());
 	}};
 	private final UrlRouter<ControllerFunction> router = new UrlRouter<ControllerFunction> ().add (
-		new ControllerRoute ("dummy", "/", UrlFilterTest::dummy),
-		new ControllerRoute ("dummy", "/:one", UrlFilterTest::dummy),
-		new ControllerRoute ("dummy", "/:one/:two", UrlFilterTest::dummy)
+		new ControllerRoute ("home", "/", UrlFilterTest::dummy),
+		new ControllerRoute ("one", "/:one", UrlFilterTest::dummy),
+		new ControllerRoute ("two", "/:one/:two", UrlFilterTest::dummy)
 	);
 
 	private final FilterCollection<HttpRequest, RestStructure> filters = new RestFilterCollection ();
@@ -50,7 +50,7 @@ public class UrlFilterTest {
 
 		trip.get (handler, "/");
 
-		verify (route).matches (any (), any (), any ());
+		verify (route).toId (any (), any (), any ());
 	}
 
 	@Test

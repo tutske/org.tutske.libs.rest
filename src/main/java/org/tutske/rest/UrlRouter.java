@@ -38,24 +38,29 @@ public class UrlRouter<T> {
 	}
 
 	public UrlRouter<T> add (UrlRoute<T> ... routes) {
-		for ( UrlRoute route : routes ) {
-			this.names.put (route.getIdentifier (), route);
+		for ( UrlRoute<T> route : routes ) {
 			this.routes.add (route);
+			route.getIdentifiers ().forEach (id -> {
+				if ( this.names.containsKey (id) ) {
+					String msg = "There is a route registered with the sane name: " + id;
+					throw new RuntimeException (msg);
+				}
+				this.names.put (id, route);
+			});
 		}
 		return this;
 	}
 
-	public UrlRoute<T> route (Method method, String url) {
+	public String route (Method method, String url) {
 		String [] parts = url.substring (1).split ("/");
-		for ( UrlRoute route : routes ) {
-			if ( route.matches (method, url, parts) ) {
-				return route;
-			}
+		for ( UrlRoute<T> route : routes ) {
+			String id = route.toId (method, url, parts);
+			if ( id != null ) { return id; }
 		}
 		return null;
 	}
 
-	public UrlRoute find (String name) {
+	public UrlRoute<T> find (String name) {
 		return names.get (name);
 	}
 

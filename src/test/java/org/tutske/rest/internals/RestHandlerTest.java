@@ -23,7 +23,7 @@ public class RestHandlerTest {
 	private final UrlRouter<ControllerFunction> router = new UrlRouter<ControllerFunction> ().add (
 		new ControllerRoute ("dummy", "/dummy", RestHandlerTest::dummy),
 		new ControllerRoute ("fail", "/fail", RestHandlerTest::fail),
-		new ControllerRoute ("fail", "/hard-fail", RestHandlerTest::hardFail)
+		new ControllerRoute ("hard-fail", "/hard-fail", RestHandlerTest::hardFail)
 	);
 
 	private static RestObject dummy (HttpRequest request) {
@@ -37,6 +37,7 @@ public class RestHandlerTest {
 	}
 
 	private static RestObject hardFail (HttpRequest request) {
+		System.out.println ("Failing hard");
 		throw new RuntimeException ("Internal Error");
 	}
 
