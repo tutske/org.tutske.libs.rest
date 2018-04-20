@@ -12,7 +12,7 @@ import java.util.Map;
  * The simple route matching will work for urls that only have exact matching parts or a
  * variable part. Things such as `/fixed/part/:variable/or/:other/variables`. Simple route
  * matching should be very fast, if the split string is passed instead of the plain url
- * this should not have a noticble impact on performance.
+ * this should not have a noticeable impact on performance.
  *
  * have a separate class that can do more fancy matchings such as globbing more than
  * one part of the url. This could still be done with a bit more fancy matching
