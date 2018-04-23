@@ -60,4 +60,12 @@ abstract class BaseRoute<T> implements UrlRoute<T> {
 			this.shouldMatch[i] = ! descriptor[i].startsWith (":");
 		}
 	}
+
+	@Override
+	public String toString () {
+		return String.format ("<%s: m `%s`, u `%s` />",
+			this.getClass ().getSimpleName (), methods, "/" + String.join ("/", descriptor)
+		);
+	}
+
 }
