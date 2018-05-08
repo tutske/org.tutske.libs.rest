@@ -31,7 +31,7 @@ public class UrlRouteTest {
 	}
 
 	@Test
-	public void it_should_match_with_or_without_a_trailing_slach () {
+	public void it_should_match_with_or_without_a_trailing_slash () {
 		UrlRoute<?> route = new SimpleRoute<> ("user", "/users/:id", null);
 		assertThat (route, routesTo (GET, "/users/abc/"));
 	}
@@ -70,6 +70,12 @@ public class UrlRouteTest {
 		assertThat (route, not (routesTo (GET, "/users/")));
 		assertThat (route, not (routesTo (GET, "/users/3/update")));
 		assertThat (route, not (routesTo (GET, "/users/3/update/")));
+	}
+
+	@Test
+	public void it_should_not_match_routes_that_are_shorter_when_allowing_a_tail () {
+		UrlRoute<?> route = new SimpleRoute<> ("", "/other/admin/::path", null);
+		assertThat (route, not (routesTo (GET, "/other/")));
 	}
 
 	@Test
@@ -147,7 +153,6 @@ public class UrlRouteTest {
 		String [] parts = url.substring (1).split ("/");
 
 		Map<String, String> params = route.extractMatches ("", url, parts);
-		System.out.println (params);
 
 		assertThat (params, hasKey ("path"));
 		assertThat (params.get ("path"), is ("/with/long/path/to/file.ext"));

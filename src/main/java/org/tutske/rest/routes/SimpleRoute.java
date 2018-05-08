@@ -40,6 +40,7 @@ public class SimpleRoute<T> extends BaseRoute<T> {
 	public String toId (HttpRequest.Method method, String url, String [] parts) {
 		if ( ! methods.contains (method) ) { return null; }
 		if ( ! this.allowTail && parts.length != this.descriptor.length ) { return null; }
+		if ( this.allowTail && parts.length < this.descriptor.length - 1 ) { return null; }
 
 		for ( int i = 0; i < descriptor.length; i++ ) {
 			if ( shouldMatch[i] && ! descriptor[i].equals (parts[i]) ) {
