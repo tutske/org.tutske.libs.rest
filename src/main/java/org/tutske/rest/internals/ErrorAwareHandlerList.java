@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.ResponseException;
+import org.tutske.utils.Bag;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +42,7 @@ public class ErrorAwareHandlerList extends HandlerList {
 			return;
 		} catch (ResponseException ex) {
 			logger.info ("Responded with an exception [from: {}, {}] [req: {} {}] {} {}",
-				request.getRemoteAddr (), request.getRemoteUser (), request.getMethod (), s,
+				request.getRemoteAddr (), retrievePrincipal (request), request.getMethod (), s,
 				ex.getStatusCode (), ex.getClass ().getSimpleName ()
 			);
 			exception = ex;
@@ -51,7 +52,7 @@ public class ErrorAwareHandlerList extends HandlerList {
 				status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 			}};
 			logger.error ("An exception occurred while processing a request [from: {}, {}] {} {}",
-				request.getRemoteAddr (), request.getRemoteUser (), request.getMethod (), s, ex
+				request.getRemoteAddr (), retrievePrincipal (request), request.getMethod (), s, ex
 			);
 		}
 
@@ -68,6 +69,15 @@ public class ErrorAwareHandlerList extends HandlerList {
 		response.getOutputStream ().flush ();
 
 		base.setHandled (true);
+	}
+
+	private String retrievePrincipal (HttpServletRequest request) {
+		Bag<String, String> context = (Bag) request.getAttribute ("context");
+
+		if ( context == null ) { return null; }
+		if ( ! context.containsKey ("principal") ) { return null; }
+
+		return context.getAs ("principal", String.class);
 	}
 
 }

@@ -53,6 +53,7 @@ public class RestHandler extends AbstractHandler {
 		ControllerFunction fn = route.getHandler (identifier);
 		Bag<String, String> data = route.extractMatches (identifier, s, s.substring (1).split ("/"));
 		HttpRequest r = new HttpRequest (request, response, data);
+		request.setAttribute ("context", r.context ());
 
 		RestStructure result;
 		try { result = filters.createChain (s, fn).call (r); }
