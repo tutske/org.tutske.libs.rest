@@ -49,8 +49,10 @@ public class ErrorAwareHandlerList extends HandlerList {
 		}
 
 		logger.warn ("Failed to serve a request, {}, {}", exception.getStatusCode (), s, exception);
+		String host = request.getHeader ("host");
+		String uri = host == null || host.isEmpty () ? null : request.getScheme () + "://" + host;
 
-		RestStructure result = exception.asRestStructure ();
+		RestStructure result = exception.asRestStructure (uri);
 		String accept = request.getHeader ("Accept");
 		String contentType = serializer.contentType (accept, result);
 

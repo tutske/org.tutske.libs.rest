@@ -16,6 +16,7 @@ import org.tutske.rest.data.RestStructure;
 import org.tutske.rest.exceptions.ResponseException;
 import org.tutske.rest.internals.*;
 
+import java.net.URI;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,9 +34,13 @@ public class Server {
 	private String preferred;
 	private Gson gson;
 
+	public Server (int port) {
+		this (null, port);
+	}
+
 	public Server (String baseurl, int port) {
 		this.server = new org.eclipse.jetty.server.Server (port);
-		this.baseurl = baseurl.endsWith ("/") ? baseurl.substring (0, baseurl.length () - 1) : baseurl;
+		this.baseurl = baseurl;
 	}
 
 	public Server configureSsl (int port, KeyStore keys, KeyStore trusted, String password) {
@@ -116,7 +121,10 @@ public class Server {
 	}
 
 	public void startAsync () throws Exception {
-		ResponseException.configureBaseUrl (baseurl);
+		if ( baseurl != null ) {
+			URI uri = new URI (baseurl);
+			ResponseException.configureBaseUrl (uri.resolve ("/").toString (), uri.getPath ());
+		}
 
 		if ( gson == null ) { gson = new GsonBuilder ().create (); }
 		if ( serializers == null ) { serializers = defaultSerializers (); }
