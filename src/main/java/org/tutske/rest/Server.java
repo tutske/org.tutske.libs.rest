@@ -128,7 +128,7 @@ public class Server {
 			Handler handler = config.createHandler (gson, serializers, preferred);
 			handlers.addHandler (handler);
 		});
-		handlers.addHandler (new NotFoundHandler (defaultSerializers ()));
+		handlers.addHandler (new NotFoundHandler ());
 
 		server.setHandler (handlers);
 		server.start ();
