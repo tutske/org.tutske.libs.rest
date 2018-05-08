@@ -40,15 +40,21 @@ public class ErrorAwareHandlerList extends HandlerList {
 			super.handle (s, base, request, response);
 			return;
 		} catch (ResponseException ex) {
+			logger.info ("Responded with an exception [from: {}, {}] [req: {} {}] {} {}",
+				request.getRemoteAddr (), request.getRemoteUser (), request.getMethod (), s,
+				ex.getStatusCode (), ex.getClass ().getSimpleName ()
+			);
 			exception = ex;
 		} catch (Exception ex) {
 			String msg = ex.getMessage ();
 			exception = new ResponseException (msg == null ? "" : msg) {{
 				status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 			}};
+			logger.error ("An exception occurred while processing a request [from: {}, {}] {} {}",
+				request.getRemoteAddr (), request.getRemoteUser (), request.getMethod (), s, ex
+			);
 		}
 
-		logger.warn ("Failed to serve a request, {}, {}", exception.getStatusCode (), s, exception);
 		String host = request.getHeader ("host");
 		String uri = host == null || host.isEmpty () ? null : request.getScheme () + "://" + host;
 
