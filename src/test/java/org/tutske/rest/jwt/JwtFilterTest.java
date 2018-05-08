@@ -35,14 +35,14 @@ public class JwtFilterTest {
 		}
 	}
 
-	private Bag<String, Object> context = new Bag<String, Object> ();
+	private Bag<String, Object> context = new Bag<> ();
 	private HttpRequest request = when (mock (HttpRequest.class).context ()).thenReturn (context).getMock ();
 	private Clock clock = when (mock (Clock.class).now ()).thenReturn (now).getMock ();
 
 	private Crypt crypt = new AESCrypt ("super secret key material");
 	private JsonWebToken token = JsonWebToken.fromData (new Auth ("jhon.doe@example.com"));
 	private JsonWebToken signed = crypt.sign (token);
-	private JwtFilter filter = new JwtFilter (crypt, Auth.class).setClock (clock);
+	private JwtFilter filter = new JwtFilter (crypt).setClock (clock);
 
 	@Test
 	public void it_should_use_the_provided_clock () throws Exception {
@@ -105,7 +105,7 @@ public class JwtFilterTest {
 
 	@Test
 	public void it_should_use_custom_headers () throws Exception {
-		filter = new JwtFilter (crypt, Auth.class, "principal", "token", "X-Custom-Authentication");
+		filter = new JwtFilter (crypt, new JwtFilter.Config () {{ principal = "principal"; token = "token"; header = "X-Custom-Authentication"; }});
 		Chain<HttpRequest, RestStructure> chain = mock (Chain.class);
 		when (request.getHeader ("X-Custom-Authentication")).thenReturn (signed.toString ());
 

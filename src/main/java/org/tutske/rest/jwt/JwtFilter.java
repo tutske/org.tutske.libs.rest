@@ -1,5 +1,6 @@
 package org.tutske.rest.jwt;
 
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.HttpRequest;
@@ -11,6 +12,7 @@ import org.tutske.rest.internals.Chain;
 import org.tutske.utils.Clock;
 
 import java.util.Date;
+import java.util.function.Function;
 
 
 /**
@@ -26,6 +28,14 @@ import java.util.Date;
 public class JwtFilter implements RestFilter {
 
 	public static class Config {
+		public String header = "Authorization";
+
+		public String principal = "principal";
+		public String token = "token";
+		public Function<JsonWebToken, Object> user = jwt -> {
+			return jwt.getPayload (JsonObject.class).get ("sub").getAsString ();
+		};
+
 		public Boolean strict = null;
 		public Boolean forceToken = null;
 		public Boolean forceEXP = null;
@@ -44,6 +54,12 @@ public class JwtFilter implements RestFilter {
 		}
 
 		private void merge (Config config) {
+			if ( config.header != null ) { header = config.header; }
+
+			if ( config.principal != null ) { principal = config.principal; }
+			if ( config.token != null ) { token = config.token; }
+			if ( config.user != null ) { user = config.user; }
+
 			if ( config.strict != null ) { strict = config.strict; }
 			if ( config.forceToken != null ) { forceToken = config.forceToken; }
 			if ( config.forceEXP != null ) { forceEXP = config.forceEXP; }
@@ -55,23 +71,39 @@ public class JwtFilter implements RestFilter {
 	private static final Logger logger = LoggerFactory.getLogger (JwtFilter.class);
 
 	private final Crypt crypt;
-	private final Class<?> clazz;
-	private final String principal;
-	private final String token;
-	private final String header;
 	private final Config config = new Config ("default");
 	private Clock clock = new Clock.SystemClock ();
 
-	public JwtFilter (Crypt crypt, Class<?> clazz) {
-		this (crypt, clazz, "principal", "token", "Authorization");
+
+	/**
+	 * Use constructor with the configuration.
+	 */
+	@Deprecated
+	public JwtFilter (Crypt crypt, Class<?> clazz, String _principal, String _token, String _header) {
+		this (crypt, new Config () {{
+			principal = _principal;
+			token = _token;
+			header = _header;
+
+			user = jwt -> jwt.getPayload (clazz);
+		}});
 	}
 
-	public JwtFilter (Crypt crypt, Class<?> clazz, String principal, String token, String header) {
-		this.clazz = clazz;
+	/**
+	 * Use constructor with the configuration.
+	 */
+	@Deprecated
+	public JwtFilter (Crypt crypt, Class<?> clazz) {
+		this (crypt, new Config () {{ user = jwt -> jwt.getPayload (clazz); }});
+	}
+
+	public JwtFilter (Crypt crypt) {
+		this (crypt, new Config ());
+	}
+
+	public JwtFilter (Crypt crypt, Config config) {
 		this.crypt = crypt;
-		this.principal = principal;
-		this.token = token;
-		this.header = header;
+		this.config.merge (config);
 	}
 
 	public JwtFilter setStrict () {
@@ -91,7 +123,7 @@ public class JwtFilter implements RestFilter {
 
 	@Override
 	public RestStructure call (HttpRequest source, Chain<HttpRequest, RestStructure> chain) throws Exception {
-		String authorization = source.getHeader (header);
+		String authorization = source.getHeader (config.header);
 
 		if ( authorization == null || authorization.isEmpty () ) {
 			if ( ! config.forceToken ) { return chain.call (source); }
@@ -101,7 +133,7 @@ public class JwtFilter implements RestFilter {
 		JsonWebToken token;
 		try { token = JsonWebToken.fromString (authorization); }
 		catch (Exception ignore) {
-			logger.info ("Failed on processing {} header as jwt.", header, ignore);
+			logger.info ("Failed on processing {} header as jwt.", config.header, ignore);
 			return cutShort ("Token could not be parsed", source, chain);
 		}
 
@@ -114,14 +146,17 @@ public class JwtFilter implements RestFilter {
 			return cutShort ("The iat, nbt or exp dates are invalid", source, chain);
 		}
 
-		source.context ().put (principal, token.getPayload (clazz));
-		source.context ().put (this.token, token);
+		source.context ().put (config.token, token);
+		if ( config.user != null ) {
+			source.context ().put (config.principal, config.user.apply (token));
+		}
+
 		return chain.call (source);
 	}
 
 	private RestStructure cutShort (String reason, HttpRequest source, Chain<HttpRequest, RestStructure> chain) throws Exception {
 		if ( config.strict ) {
-			String h = source.getHeader (header);
+			String h = source.getHeader (config.header);
 			throw new InvalidJwtException (reason, new RestObject () {{
 				v ("token", h == null ? "missing" : h);
 			}});
