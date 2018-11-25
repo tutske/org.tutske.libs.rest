@@ -2,6 +2,7 @@ package org.tutske.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.tutske.utils.Bag;
+import org.tutske.utils.Exceptions;
 import org.tutske.utils.StreamCopier;
 
 import java.io.ByteArrayInputStream;
@@ -9,9 +10,38 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 
 
 public interface Request {
+
+	public static void decodeInto (Bag<String, String> bag, String querystring) {
+		if ( querystring == null || querystring.isEmpty () ) { return; }
+
+		for ( String part : querystring.split ("&") ) {
+			String [] split = part.split ("=", 2);
+			String key = decodeQueryString (split[0]);
+
+			if ( split.length == 2 && ! split[1].isEmpty () ) {
+				String value = decodeQueryString (split[1]);
+				bag.add (key, value);
+			} else {
+				bag.add (key);
+			}
+		}
+	}
+
+	public static Bag<String, String> decode (String querystring) {
+		Bag<String, String> bag = new Bag<> ();
+		decodeInto (bag, querystring);
+		return bag;
+	}
+
+	public static String decodeQueryString (String encoded) {
+		try { return URLDecoder.decode (encoded, "UTF-8"); }
+		catch ( Exception e ) { throw Exceptions.wrap (e); }
+	}
+
 
 	public enum Method {
 		CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE, UNKNOWN;
