@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.tutske.utils.Bag;
+import org.tutske.lib.utils.Bag;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

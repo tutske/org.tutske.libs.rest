@@ -1,10 +1,9 @@
 package org.tutske.rest;
 
+import org.tutske.lib.utils.Functions.*;
 import org.tutske.rest.Request.Method;
-import org.tutske.utils.Bag;
-import org.tutske.utils.Exceptions;
-import org.tutske.utils.functions.RiskyConsumer;
-import org.tutske.utils.functions.RiskyFn;
+import org.tutske.lib.utils.Bag;
+import org.tutske.lib.utils.Exceptions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

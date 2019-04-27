@@ -2,7 +2,7 @@ package org.tutske.rest;
 
 import static org.tutske.rest.Request.*;
 
-import org.tutske.utils.Bag;
+import org.tutske.lib.utils.Bag;
 
 import java.util.List;
 import java.util.Map;

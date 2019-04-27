@@ -1,13 +1,16 @@
 plugins {
-	id "org.tutske.gradle" version 'a.1.1'
+	id "org.tutske.gradle" version 'a.2.2'
 }
 
 group = 'org.tutske.libs'
 
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
 dependencies {
-	compile (
+	implementation (
 		[ group: 'org.slf4j', name: 'slf4j-api', version: '[1,)' ],
-		[ group: 'org.tutske.libs', name: 'ts-libs-utils', version: '[a.1.0,)' ],
+		[ group: 'org.tutske.libs', name: 'org.tutske.libs.utils', version: '[a.3.0,)' ],
 
 		[ group: 'org.eclipse.jetty', name: 'jetty-server', version: '[9,)' ],
 		[ group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: '[9,)' ],
@@ -21,4 +24,11 @@ dependencies {
 		[ group: 'org.hamcrest', name: 'hamcrest-all', version: '[1,)' ],
 		[ group: 'org.mockito', name: 'mockito-all', version: '[1,)' ]
 	)
+}
+
+compileJava {
+	doFirst {
+		options.compilerArgs = [ '--module-path', classpath.asPath ]
+		classpath = files ()
+	}
 }

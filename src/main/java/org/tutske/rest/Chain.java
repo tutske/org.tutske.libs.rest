@@ -1,8 +1,8 @@
 package org.tutske.rest;
 
-import org.tutske.utils.Exceptions;
+import org.tutske.lib.utils.Exceptions;
 
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -15,7 +15,7 @@ public class Chain<S, T> implements Function<S, T> {
 	private Function<S, T> destination;
 
 	public Chain (Function<S, T> destination) {
-		this (destination, new LinkedList<> ());
+		this (destination, Collections.emptyList ());
 	}
 
 	public Chain (Function<S, T> destination, List<Filter<S, T>> routes) {
@@ -30,21 +30,17 @@ public class Chain<S, T> implements Function<S, T> {
 	}
 
 	public T riskyApply (S source) throws Exception {
-		if ( current > depth ) {
-			throw new RuntimeException ("Invalid call of filter chain");
-		}
+		if ( current > depth ) { throw new RuntimeException ("Invalid call of filter chain"); }
 
 		int index = current;
 
 		current++;
 		depth++;
 
-		T result;
-		if ( index == routes.size ()) {
-			result = destination.apply (source);
-		} else {
-			result = this.routes.get (index).call (source, this);
-		}
+		T result = ( index == routes.size () ?
+			destination.apply (source) :
+			this.routes.get (index).call (source, this)
+		);
 
 		depth--;
 

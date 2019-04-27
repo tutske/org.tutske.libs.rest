@@ -2,10 +2,10 @@ package org.tutske.rest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.tutske.lib.utils.Functions.*;
 import static org.tutske.rest.Request.Method.*;
 
 import org.junit.Test;
-import org.tutske.utils.functions.RiskyFn;
 
 import java.util.EnumSet;
 

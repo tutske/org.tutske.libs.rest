@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.tutske.rest.Request.Method.*;
 
 import org.junit.Test;
-import org.tutske.utils.Bag;
+import org.tutske.lib.utils.Bag;
 
 import java.util.EnumSet;
 import java.util.Map;

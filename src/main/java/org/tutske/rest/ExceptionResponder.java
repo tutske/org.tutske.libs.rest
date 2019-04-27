@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tutske.rest.exceptions.InternalException;
 import org.tutske.rest.exceptions.ResponseException;
-import org.tutske.utils.Bag;
+import org.tutske.lib.utils.Bag;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

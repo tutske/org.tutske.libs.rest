@@ -1,8 +1,8 @@
 package org.tutske.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.tutske.utils.Bag;
-import org.tutske.utils.Exceptions;
+import org.tutske.lib.utils.Bag;
+import org.tutske.lib.utils.Exceptions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

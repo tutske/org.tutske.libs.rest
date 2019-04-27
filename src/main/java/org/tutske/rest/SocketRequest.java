@@ -2,7 +2,7 @@ package org.tutske.rest;
 
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
-import org.tutske.utils.Bag;
+import org.tutske.lib.utils.Bag;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

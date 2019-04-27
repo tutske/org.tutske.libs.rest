@@ -1,9 +1,8 @@
 package org.tutske.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.tutske.utils.Bag;
-import org.tutske.utils.Exceptions;
-import org.tutske.utils.StreamCopier;
+import org.tutske.lib.utils.Bag;
+import org.tutske.lib.utils.Exceptions;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 
 public interface Request {
@@ -64,12 +65,24 @@ public interface Request {
 	public void setStatus (int status);
 
 	default public String getBody () {
-		ByteArrayOutputStream out = new ByteArrayOutputStream ();
+		return getBody (StandardCharsets.UTF_8);
+	}
 
-		try { new StreamCopier (getInputStream (), out).copy (); }
-		catch ( IOException e ) { throw new RuntimeException (e); }
+	default public String getBody (Charset charset) {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream ();
+			InputStream in = getInputStream ();
 
-		return new String (out.toByteArray ());
+			int index = 0;
+			byte [] buffer = new byte [1 << 14];
+			while ( (index = in.read (buffer, 0, buffer.length)) != -1 ) {
+				out.write (buffer, 0, index);
+			}
+
+			return new String (out.toByteArray (), charset);
+		} catch ( IOException e ) {
+			throw new RuntimeException (e);
+		}
 	}
 
 	public <T> T json (Class<T> clazz);

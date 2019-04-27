@@ -7,8 +7,8 @@ import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tutske.utils.Bag;
-import org.tutske.utils.Exceptions;
+import org.tutske.lib.utils.Bag;
+import org.tutske.lib.utils.Exceptions;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
