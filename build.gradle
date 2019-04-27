@@ -8,7 +8,7 @@ sourceCompatibility = '11'
 targetCompatibility = '11'
 
 dependencies {
-	implementation (
+	api (
 		[ group: 'org.slf4j', name: 'slf4j-api', version: '[1,)' ],
 		[ group: 'org.tutske.libs', name: 'org.tutske.libs.utils', version: '[a.3.0,)' ],
 
