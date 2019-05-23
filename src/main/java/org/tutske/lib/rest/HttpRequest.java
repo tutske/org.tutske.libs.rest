@@ -1,6 +1,7 @@
 package org.tutske.lib.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.tutske.lib.api.Request;
 import org.tutske.lib.utils.Bag;
 import org.tutske.lib.utils.Exceptions;
 

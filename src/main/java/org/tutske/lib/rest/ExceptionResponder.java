@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.eclipse.jetty.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tutske.lib.rest.exceptions.InternalException;
-import org.tutske.lib.rest.exceptions.ResponseException;
+import org.tutske.lib.api.exceptions.InternalException;
+import org.tutske.lib.api.exceptions.ResponseException;
 import org.tutske.lib.utils.Bag;
 
 import javax.servlet.ServletException;

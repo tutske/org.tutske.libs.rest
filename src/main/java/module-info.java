@@ -1,12 +1,11 @@
 module org.tutske.libs.rest {
 
 	exports org.tutske.lib.rest;
-	exports org.tutske.lib.rest.exceptions;
-	exports org.tutske.lib.rest.jwt;
 
 	/* explicit modules */
-	requires org.tutske.libs.utils;
 	requires org.slf4j;
+	requires org.tutske.libs.api;
+	requires org.tutske.libs.utils;
 
 	/* named automatic modules */
 	requires transitive com.fasterxml.jackson.core;
