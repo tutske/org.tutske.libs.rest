@@ -43,7 +43,7 @@ public class HttpAsyncHandler extends AbstractHandler implements Consumer<ApiRou
 			.registerModule (new Jdk8Module ())
 			.registerModule (new JavaTimeModule ());
 
-		this.responder = new ExceptionResponder (this.mapper);
+		this.responder = responder == null ? new ExceptionResponder (this.mapper) : responder;
 		this.router = router;
 	}
 
