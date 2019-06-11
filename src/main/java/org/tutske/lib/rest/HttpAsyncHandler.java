@@ -11,6 +11,8 @@ import org.tutske.lib.api.ApiRouter;
 import org.tutske.lib.api.Request;
 import org.tutske.lib.utils.Bag;
 
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 
@@ -26,6 +29,7 @@ public class HttpAsyncHandler extends AbstractHandler implements Consumer<ApiRou
 	private final ExecutorService workers = Executors.newCachedThreadPool ();
 	private final ObjectMapper mapper;
 	private final ExceptionResponder responder;
+	private final long timeout = TimeUnit.SECONDS.toMillis (30);
 	private ApiRouter<Request, CompletableFuture<Object>> router;
 
 	public HttpAsyncHandler () { this (null, null, null); }
@@ -77,6 +81,8 @@ public class HttpAsyncHandler extends AbstractHandler implements Consumer<ApiRou
 		});
 
 		base.startAsync ();
+		base.getAsyncContext ().setTimeout (timeout);
+		base.getAsyncContext ().addListener (new TimeoutListener (base, future));
 		base.setHandled (true);
 	}
 
@@ -86,6 +92,31 @@ public class HttpAsyncHandler extends AbstractHandler implements Consumer<ApiRou
 		response.setStatus (status);
 		mapper.writeValue (response.getOutputStream (), value);
 		response.getOutputStream ().flush ();
+	}
+
+	private static class TimeoutListener implements AsyncListener {
+		private final CompletableFuture<Object> future;
+		private final org.eclipse.jetty.server.Request request;
+
+		public TimeoutListener (org.eclipse.jetty.server.Request request, CompletableFuture<Object> future) {
+			this.future = future;
+			this.request = request;
+		}
+
+		@Override public void onStartAsync (AsyncEvent event) throws IOException {}
+		@Override public void onComplete (AsyncEvent event) throws IOException {}
+
+		@Override public void onTimeout (AsyncEvent event) throws IOException {
+			if ( ! future.isDone () ) {
+				future.cancel (true);
+			}
+		}
+
+		@Override public void onError (AsyncEvent event) throws IOException {
+			if ( ! future.isDone () ) {
+				future.completeExceptionally (event.getThrowable ());
+			}
+		}
 	}
 
 }
