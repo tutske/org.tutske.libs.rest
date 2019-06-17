@@ -46,7 +46,7 @@ public class SocketHttpHandler extends WebSocketHandler implements Consumer<ApiR
 	@Override
 	public void handle (String s, org.eclipse.jetty.server.Request base, HttpServletRequest request, HttpServletResponse response)
 	throws IOException, ServletException {
-		String [] parts = API.splitParts (base.getHttpURI ().getPath ());
+		String [] parts = API.saveSplitParts (base.getHttpURI ().getPath ());
 		String identifier = router.toId (Request.Method.of (base.getMethod ()), "current", s, parts);
 
 		if ( identifier == null ) { return; }

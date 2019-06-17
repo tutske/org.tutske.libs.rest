@@ -60,7 +60,7 @@ public class HttpHandler extends AbstractHandler implements Consumer<ApiRouter<R
 			throw new RuntimeException ("Http handler cannot handle requests when no router is configured");
 		}
 
-		String [] parts = API.splitParts (base.getHttpURI ().getPath ());
+		String [] parts = API.saveSplitParts (base.getHttpURI ().getPath ());
 		Request.Method method = Request.Method.of (request.getMethod ());
 
 		String identifier = router.toId (method, "current", s, parts);
