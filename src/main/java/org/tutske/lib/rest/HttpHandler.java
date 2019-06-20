@@ -20,15 +20,21 @@ import java.util.function.Consumer;
 
 public class HttpHandler extends AbstractHandler implements Consumer<ApiRouter<Request, Object>> {
 
+	@FunctionalInterface
+	public static interface RequestSupplier {
+		public Request get (HttpServletRequest request, HttpServletResponse response, Bag<String, String> path);
+	}
+
 	private final ObjectMapper mapper;
 	private final ExceptionResponder responder;
+	private final RequestSupplier requests;
 	private ApiRouter<Request, Object> router;
 
-	public HttpHandler () { this (null, null, null); }
-	public HttpHandler (ApiRouter<Request, Object> router) { this (router, null, null); }
-	public HttpHandler (ObjectMapper mapper) { this (null, mapper, null); }
+	public HttpHandler () { this (null, null); }
+	public HttpHandler (ObjectMapper mapper) { this (mapper, null); }
+	public HttpHandler (RequestSupplier requests) { this (null, requests); }
 
-	public HttpHandler (ApiRouter<Request, Object> router, ObjectMapper mapper, ExceptionResponder responder) {
+	public HttpHandler (ObjectMapper mapper, RequestSupplier requests) {
 		this.mapper = mapper != null ? mapper : new ObjectMapper ()
 			.disable (DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 			.disable (SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -36,7 +42,7 @@ public class HttpHandler extends AbstractHandler implements Consumer<ApiRouter<R
 			.registerModule (new JavaTimeModule ());
 
 		this.responder = new ExceptionResponder (this.mapper);
-		this.router = router;
+		this.requests = requests != null ? requests : (req, res, path) -> new HttpRequest (req, res, path, mapper);
 	}
 
 	@Override
@@ -68,7 +74,7 @@ public class HttpHandler extends AbstractHandler implements Consumer<ApiRouter<R
 		if ( identifier == null ) { return; }
 
 		Bag<String, String> data = router.extractMatches (identifier, s, parts);
-		HttpRequest r = new HttpRequest (request, response, data, mapper);
+		Request r = requests.get (request, response, data);
 		request.setAttribute ("context", r.context ());
 
 		Object result;

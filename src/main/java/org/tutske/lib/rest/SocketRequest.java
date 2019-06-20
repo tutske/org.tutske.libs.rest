@@ -13,11 +13,11 @@ import java.io.OutputStream;
 
 class SocketRequest implements Request {
 
-	private final Bag<String, Object> context = new Bag<> ();
-	private final ServletUpgradeRequest request;
-	private final ServletUpgradeResponse response;
-	private final Bag<String, String> path;
-	private final Bag<String, String> queryParams;
+	protected final Bag<String, Object> context = new Bag<> ();
+	protected final ServletUpgradeRequest request;
+	protected final ServletUpgradeResponse response;
+	protected final Bag<String, String> path;
+	protected final Bag<String, String> queryParams;
 
 	public SocketRequest (ServletUpgradeRequest request, ServletUpgradeResponse response, Bag<String, String> path) {
 		this.request = request;

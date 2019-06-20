@@ -2,6 +2,8 @@ package org.tutske.lib.rest;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +25,22 @@ public class SocketHttpHandler extends WebSocketHandler implements Consumer<ApiR
 	public static interface WebSocketListener extends org.eclipse.jetty.websocket.api.WebSocketListener {
 	}
 
+	@FunctionalInterface
+	public static interface RequestSupplier {
+		public Request get (ServletUpgradeRequest request, ServletUpgradeResponse response, Bag<String, String> path);
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger (SocketHttpHandler.class);
 
 	private final ThreadLocal<CreationInfo> info = new ThreadLocal<> ();
 	private final ExceptionResponder responder;
+	private final RequestSupplier requests;
 	private ApiRouter<Request, SocketHttpHandler.WebSocketListener> router;
 
-	public SocketHttpHandler () { this (null, null); }
-	public SocketHttpHandler (ExceptionResponder responder) { this (null, responder); }
-	public SocketHttpHandler (ApiRouter<Request, WebSocketListener> router) { this (router, null); }
-
-	public SocketHttpHandler (ApiRouter<Request, WebSocketListener> router, ExceptionResponder responder) {
-		this.router = router;
-		this.responder = responder != null ? responder : new ExceptionResponder ();
+	public SocketHttpHandler () { this (null); }
+	public SocketHttpHandler (RequestSupplier requests) {
+		this.responder = new ExceptionResponder ();
+		this.requests = requests != null ? requests : SocketRequest::new;
 	}
 
 	@Override
@@ -61,7 +66,7 @@ public class SocketHttpHandler extends WebSocketHandler implements Consumer<ApiR
 			CreationInfo info = this.info.get ();
 			try {
 				Bag<String, String> query =router.extractMatches (info.identifier, info.s, info.parts);
-				SocketRequest socketRequest = new SocketRequest (request, response, query);
+				Request socketRequest = requests.get (request, response, query);
 				return new WebSocketListenerWrapper (router.getHandler (info.identifier).apply (socketRequest));
 			} catch (Throwable exception) {
 				logger.debug ("creating web socket failed", exception);

@@ -14,12 +14,12 @@ import java.io.OutputStream;
 
 public class HttpRequest implements Request {
 
-	private final Bag<String, Object> context = new Bag<> ();
-	private final HttpServletRequest request;
-	private final HttpServletResponse response;
-	private final ObjectMapper mapper;
-	private final Bag<String, String> path;
-	private final Bag<String, String> queryParams;
+	protected final Bag<String, Object> context = new Bag<> ();
+	protected final HttpServletRequest request;
+	protected final HttpServletResponse response;
+	protected final ObjectMapper mapper;
+	protected final Bag<String, String> path;
+	protected final Bag<String, String> queryParams;
 
 	public HttpRequest (HttpServletRequest request, HttpServletResponse response, Bag<String, String> path, ObjectMapper mapper) {
 		this.request = request;

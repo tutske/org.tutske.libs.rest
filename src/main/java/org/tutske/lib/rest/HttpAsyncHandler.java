@@ -26,25 +26,30 @@ import java.util.function.Consumer;
 
 public class HttpAsyncHandler extends AbstractHandler implements Consumer<ApiRouter<Request, CompletableFuture<Object>>> {
 
+	@FunctionalInterface
+	public static interface RequestSupplier {
+		public Request get (HttpServletRequest request, HttpServletResponse response, Bag<String, String> path);
+	}
+
 	private final ExecutorService workers = Executors.newCachedThreadPool ();
 	private final ObjectMapper mapper;
+	private final RequestSupplier requests;
 	private final ExceptionResponder responder;
 	private final long timeout = TimeUnit.SECONDS.toMillis (30);
 	private ApiRouter<Request, CompletableFuture<Object>> router;
 
-	public HttpAsyncHandler () { this (null, null, null); }
-	public HttpAsyncHandler (ApiRouter<Request, CompletableFuture<Object>> router) { this (router, null, null); }
-	public HttpAsyncHandler (ObjectMapper mapper) { this (null, mapper, null); }
+	public HttpAsyncHandler () { this (null, null); }
+	public HttpAsyncHandler (ObjectMapper mapper) { this (mapper, null); }
 
-	public HttpAsyncHandler (ApiRouter<Request, CompletableFuture<Object>> router, ObjectMapper mapper, ExceptionResponder responder) {
+	public HttpAsyncHandler (ObjectMapper mapper, RequestSupplier requests) {
 		this.mapper = mapper != null ? mapper : new ObjectMapper ()
 			.disable (DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 			.disable (SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 			.registerModule (new Jdk8Module ())
 			.registerModule (new JavaTimeModule ());
 
-		this.responder = responder == null ? new ExceptionResponder (this.mapper) : responder;
-		this.router = router;
+		this.responder = new ExceptionResponder (this.mapper);
+		this.requests = requests != null ? requests : (req, res, path) -> new HttpRequest (req, res, path, mapper);
 	}
 
 	@Override
@@ -67,7 +72,7 @@ public class HttpAsyncHandler extends AbstractHandler implements Consumer<ApiRou
 		if ( identifier == null ) { return; }
 
 		Bag<String, String> data = router.extractMatches (identifier, s, parts);
-		HttpRequest r = new HttpRequest (request, response, data, mapper);
+		Request r = requests.get (request, response, data);
 		request.setAttribute ("context", r.context ());
 
 		CompletableFuture<Object> future = router.createChain (method, "current", s, parts).apply (r);
