@@ -9,31 +9,44 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
 
 
 class SocketRequest implements Request {
 
-	protected final Bag<String, Object> context = new Bag<> ();
+	public static Bag<String, String> extractHeaders (ServletUpgradeRequest request) {
+		return extractHeadersInto (new Bag<> (), request);
+	}
+
+	public static Bag<String, String> extractHeadersInto (Bag<String, String> headers, ServletUpgradeRequest request) {
+		Map<String, List<String>> original = request.getHeaders ();
+
+		for ( Map.Entry<String, List<String>> entry : original.entrySet () ) {
+			for ( String value : entry.getValue () ) { headers.add (entry.getKey (), value); }
+		}
+
+		return headers;
+	}
+
 	protected final ServletUpgradeRequest request;
 	protected final ServletUpgradeResponse response;
 	protected final Bag<String, String> path;
-	protected final Bag<String, String> queryParams;
+	protected final Bag<String, String> queryParams = new Bag<> ();
+	protected final Bag<String, String> headers = new Bag<> ();
+	protected final Bag<String, Object> context = new Bag<> ();
 
 	public SocketRequest (ServletUpgradeRequest request, ServletUpgradeResponse response, Bag<String, String> path) {
 		this.request = request;
 		this.response = response;
 		this.path = path;
-		this.queryParams = new Bag<> ();
+
+		extractHeadersInto (headers, request);
 	}
 
 	@Override
 	public Method getMethod () {
 		return Method.of (request.getMethod ());
-	}
-
-	@Override
-	public String getHeader (String header) {
-		return request.getHeader (header);
 	}
 
 	@Override
@@ -62,6 +75,11 @@ class SocketRequest implements Request {
 			Request.decodeInto (queryParams, request.getQueryString ());
 		}
 		return queryParams;
+	}
+
+	@Override
+	public Bag<String, String> headers () {
+		return headers;
 	}
 
 	@Override

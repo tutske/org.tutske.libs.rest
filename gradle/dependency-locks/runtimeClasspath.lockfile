@@ -21,5 +21,5 @@ org.eclipse.jetty:jetty-servlet:9.4.19.v20190610
 org.eclipse.jetty:jetty-util:9.4.19.v20190610
 org.eclipse.jetty:jetty-xml:9.4.19.v20190610
 org.slf4j:slf4j-api:1.8.0-beta4
-org.tutske.libs:org.tutske.libs.api:a.1.0-3-g38ac3b0
-org.tutske.libs:org.tutske.libs.utils:a.3.1
+org.tutske.libs:org.tutske.libs.api:a.1.0-6-g5674bbb
+org.tutske.libs:org.tutske.libs.utils:a.3.2-pre-8-g26242a3

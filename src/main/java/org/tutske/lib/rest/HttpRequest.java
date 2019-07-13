@@ -10,33 +10,49 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 
 
 public class HttpRequest implements Request {
 
-	protected final Bag<String, Object> context = new Bag<> ();
+	public static Bag<String, String> extractHeaders (HttpServletRequest request) {
+		return extractHeadersInto (new Bag<> (), request);
+	}
+
+	public static Bag<String, String> extractHeadersInto (Bag<String, String> headers, HttpServletRequest request) {
+		Enumeration<String> names = request.getHeaderNames ();
+
+		while ( names.hasMoreElements () ) {
+			String name = names.nextElement ();
+			Enumeration<String> values = request.getHeaders (name);
+			while ( values.hasMoreElements () ) {
+				headers.add (name, values.nextElement ());
+			}
+		}
+
+		return headers;
+	}
+
 	protected final HttpServletRequest request;
 	protected final HttpServletResponse response;
 	protected final ObjectMapper mapper;
 	protected final Bag<String, String> path;
-	protected final Bag<String, String> queryParams;
+	protected final Bag<String, String> queryParams = new Bag<> ();
+	protected final Bag<String, String> headers = new Bag<> ();
+	protected final Bag<String, Object> context = new Bag<> ();
 
 	public HttpRequest (HttpServletRequest request, HttpServletResponse response, Bag<String, String> path, ObjectMapper mapper) {
 		this.request = request;
 		this.response = response;
 		this.mapper = mapper;
 		this.path = path;
-		this.queryParams = new Bag<> ();
+
+		extractHeadersInto (headers, request);
 	}
 
 	@Override
 	public Method getMethod () {
 		return Method.of (request.getMethod ());
-	}
-
-	@Override
-	public String getHeader (String header) {
-		return request.getHeader (header);
 	}
 
 	@Override
@@ -65,6 +81,11 @@ public class HttpRequest implements Request {
 			Request.decodeInto (queryParams, request.getQueryString ());
 		}
 		return queryParams;
+	}
+
+	@Override
+	public Bag<String, String> headers () {
+		return headers;
 	}
 
 	@Override
