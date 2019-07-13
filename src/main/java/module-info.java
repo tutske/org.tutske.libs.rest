@@ -16,6 +16,7 @@ module org.tutske.libs.rest {
 	requires transitive org.eclipse.jetty.io;
 	requires transitive org.eclipse.jetty.server;
 	requires transitive org.eclipse.jetty.servlet;
+	requires transitive org.eclipse.jetty.util;
 	requires transitive org.eclipse.jetty.websocket.api;
 	requires transitive org.eclipse.jetty.websocket.server;
 	requires transitive org.eclipse.jetty.websocket.servlet;
